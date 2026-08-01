@@ -242,6 +242,17 @@
     document.addEventListener("keydown", (e) => {
       if (e.key === "Escape") closeModal();
     });
+
+    /* Bouton remonter en haut : visible après 400px de scroll */
+    const backToTop = $("#back-to-top");
+    const onScroll = () => {
+      backToTop.hidden = window.scrollY < 400;
+    };
+    backToTop.addEventListener("click", () => {
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    });
+    window.addEventListener("scroll", onScroll);
+    onScroll();
   }
 
   document.addEventListener("DOMContentLoaded", init);

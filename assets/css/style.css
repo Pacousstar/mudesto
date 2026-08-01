@@ -316,6 +316,27 @@ body {
 .identity-panel .id-row span { color: var(--muted); flex-shrink: 0; }
 .identity-panel .id-row b { color: var(--ink); text-align: right; }
 
+/* ---------- Bouton remonter en haut ---------- */
+.back-to-top {
+  position: fixed;
+  bottom: 24px;
+  left: 24px;
+  width: 52px;
+  height: 52px;
+  border: none;
+  border-radius: 50%;
+  background: var(--purple);
+  color: var(--orange);
+  font-size: 1.5rem;
+  font-weight: 800;
+  cursor: pointer;
+  box-shadow: 0 6px 20px rgba(80, 16, 64, 0.35);
+  z-index: 90;
+  transition: transform 0.15s ease, background 0.15s ease;
+}
+.back-to-top:hover { background: var(--purple-soft); transform: translateY(-3px); }
+.back-to-top[hidden] { display: none; }
+
 /* ---------- Responsive ---------- */
 @media (max-width: 560px) {
   .header-titles h1 { font-size: 1.6rem; }
