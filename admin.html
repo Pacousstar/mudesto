@@ -102,6 +102,10 @@
       <button class="tab" data-tab="mutuelle">Mutuelle &amp; tarifs</button>
     </div>
 
+    <div id="save-status" style="display:none;background:#fdf3e4;border:1px solid #f0d9a8;border-radius:8px;padding:10px 14px;font-size:0.9rem;font-weight:700;margin-bottom:14px;color:#8a5a00;">
+      &#128190; Modifications non enregistrées &mdash; cliquez sur « Publier sur GitHub » pour les mettre en ligne (sinon elles seront perdues).
+    </div>
+
     <div class="admin-actions">
       <button class="btn" id="btn-add">+ Ajouter un membre</button>
       <button class="btn secondary" id="btn-export">Télécharger data.js</button>
@@ -149,6 +153,15 @@
       const CATEGORIES = Object.keys(DATA.tarifs.cotisationMensuelle);
       const MOIS = DATA.mois;
       const ANNEES = DATA.annees;
+
+      const saveStatus = $("#save-status");
+      const markDirty = () => {
+        saveStatus.style.display = "block";
+        saveStatus.textContent = "\u{1F4BE} Modifications non enregistrées \u2014 cliquez sur « Publier sur GitHub » pour les mettre en ligne (sinon elles seront perdues).";
+        saveStatus.style.background = "#fdf3e4";
+        saveStatus.style.borderColor = "#f0d9a8";
+        saveStatus.style.color = "#8a5a00";
+      };
 
       const lists = { bureau: DATA.bureau, adherents: DATA.adherents, cotisants: DATA.cotisants };
       const uid = () => "m" + Date.now().toString(36) + Math.random().toString(36).slice(2, 6);
@@ -246,6 +259,7 @@
                 "f-num": "numCarte", "f-date": "dateAdhesion"
               };
               m[map[el.className]] = el.value;
+              markDirty();
             });
           });
 
@@ -259,6 +273,7 @@
                 const img = row.querySelector(".photo-preview");
                 img.src = dataUrl;
                 img.style.display = "";
+                markDirty();
               });
             });
           }
@@ -267,7 +282,7 @@
             el.addEventListener("change", (e) => {
               const f = e.target.files[0];
               if (!f) return;
-              fileToDataURL(f, 1000, (dataUrl) => { m[el.dataset.field] = dataUrl; });
+              fileToDataURL(f, 1000, (dataUrl) => { m[el.dataset.field] = dataUrl; markDirty(); });
             });
           });
 
@@ -276,6 +291,7 @@
               if (!m.cotisations) m.cotisations = {};
               if (!m.cotisations[cb.dataset.annee]) m.cotisations[cb.dataset.annee] = {};
               m.cotisations[cb.dataset.annee][cb.dataset.mois] = cb.checked;
+              markDirty();
             });
           });
 
@@ -285,6 +301,7 @@
               if (confirm("Supprimer ce membre ?")) {
                 const idx = list.findIndex((x) => x.id === id);
                 if (idx > -1) list.splice(idx, 1);
+                markDirty();
                 renderTab();
               }
             });
@@ -311,6 +328,7 @@
         if (currentTab === "bureau") m.poste = "Membre du bureau";
         if (currentTab === "cotisants") m.cotisations = {};
         lists[currentTab].push(m);
+        markDirty();
         renderTab();
       });
 
@@ -381,6 +399,11 @@
             return;
           }
           status("Publié ! Le site sera à jour dans 1-2 min ✓", true);
+          saveStatus.style.display = "block";
+          saveStatus.textContent = "\u2713 Toutes les modifications sont publiées en ligne — le site sera à jour dans 1-2 min.";
+          saveStatus.style.background = "#e8f7ec";
+          saveStatus.style.borderColor = "#b7e3c3";
+          saveStatus.style.color = "#1b8a3a";
         } catch (e) {
           status("Erreur : " + e.message, false);
         } finally {
