@@ -249,6 +249,13 @@
             <label>Contact<input class="f-contact" value="${(m.contact || "").replace(/"/g, "&quot;")}"></label>
             <label>Numéro de carte<input class="f-num" value="${(m.numCarte || "").replace(/"/g, "&quot;")}"></label>
             <label>Date d'adhésion<input class="f-date" value="${(m.dateAdhesion || "").replace(/"/g, "&quot;")}" placeholder="JJ/MM/AAAA"></label>
+            <label>Date de naissance<input class="f-ddn" value="${(m.dateNaissance || "").replace(/"/g, "&quot;")}" placeholder="JJ/MM/AAAA"></label>
+            <label>Lieu de naissance<input class="f-ldn" value="${(m.lieuNaissance || "").replace(/"/g, "&quot;")}"></label>
+            <label>Profession<input class="f-prof" value="${(m.profession || "").replace(/"/g, "&quot;")}"></label>
+            <label>Nom du père<input class="f-pere" value="${(m.pere || "").replace(/"/g, "&quot;")}"></label>
+            <label>Nom de la mère<input class="f-mere" value="${(m.mere || "").replace(/"/g, "&quot;")}"></label>
+            <label>Quartier<input class="f-quartier" value="${(m.quartier || "").replace(/"/g, "&quot;")}"></label>
+            <label>Résidence / domicile<input class="f-residence" value="${(m.residence || "").replace(/"/g, "&quot;")}"></label>
             ${isBureau ? `
               <label>Recto carte membre<input type="file" accept="image/*" class="f-file" data-field="carteMembreRecto"></label>
               <label>Verso carte membre<input type="file" accept="image/*" class="f-file" data-field="carteMembreVerso"></label>
@@ -285,12 +292,15 @@
           const m = list.find((x) => x.id === id);
           if (!m) return;
 
-          row.querySelectorAll(".f-nom, .f-prenoms, .f-poste, .f-categorie, .f-contact, .f-num, .f-date").forEach((el) => {
+          row.querySelectorAll(".f-nom, .f-prenoms, .f-poste, .f-categorie, .f-contact, .f-num, .f-date, .f-ddn, .f-ldn, .f-prof, .f-pere, .f-mere, .f-quartier, .f-residence").forEach((el) => {
             el.addEventListener("change", () => {
               const map = {
                 "f-nom": "nom", "f-prenoms": "prenoms", "f-poste": "poste",
                 "f-categorie": "categorie", "f-contact": "contact",
-                "f-num": "numCarte", "f-date": "dateAdhesion"
+                "f-num": "numCarte", "f-date": "dateAdhesion",
+                "f-ddn": "dateNaissance", "f-ldn": "lieuNaissance",
+                "f-prof": "profession", "f-pere": "pere", "f-mere": "mere",
+                "f-quartier": "quartier", "f-residence": "residence"
               };
               m[map[el.className]] = el.value;
               markDirty();

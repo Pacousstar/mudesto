@@ -288,6 +288,34 @@ body {
 .contact-item { white-space: nowrap; }
 .contact-sep { margin: 0 8px; opacity: 0.5; }
 
+/* ---------- Fiche identité (modale) ---------- */
+.identity-panel {
+  width: 100%;
+  max-width: 400px;
+  background: #f7f0f5;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 14px 16px;
+  margin-top: 14px;
+}
+.identity-panel h4 {
+  color: var(--purple);
+  font-size: 0.95rem;
+  margin-bottom: 8px;
+  border-bottom: 2px solid var(--orange);
+  padding-bottom: 6px;
+}
+.identity-panel .id-row {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  font-size: 0.82rem;
+  padding: 5px 0;
+  border-bottom: 1px dashed var(--border);
+}
+.identity-panel .id-row span { color: var(--muted); flex-shrink: 0; }
+.identity-panel .id-row b { color: var(--ink); text-align: right; }
+
 /* ---------- Responsive ---------- */
 @media (max-width: 560px) {
   .header-titles h1 { font-size: 1.6rem; }

@@ -152,6 +152,28 @@
     </div>`;
   }
 
+  /* ---------- Identité complète (fiche membre) ---------- */
+
+  function identitePanel(m) {
+    const rows = [
+      ["Date de naissance", m.dateNaissance],
+      ["Lieu de naissance", m.lieuNaissance],
+      ["Profession", m.profession],
+      ["Nom du père", m.pere],
+      ["Nom de la mère", m.mere],
+      ["Quartier", m.quartier],
+      ["Résidence / domicile", m.residence],
+      ["Contact", m.contact],
+      ["Catégorie", m.categorie]
+    ].filter(([, v]) => v);
+    if (!rows.length) return "";
+    return `
+    <div class="identity-panel">
+      <h4>Informations personnelles</h4>
+      ${rows.map(([label, v]) => `<div class="id-row"><span>${label}</span><b>${v}</b></div>`).join("")}
+    </div>`;
+  }
+
   /* ---------- Modale ---------- */
 
   function openModal(html, title) {
@@ -172,15 +194,15 @@
   const renderers = {
     bureau: (m) => {
       openModal(
-        carteMembreRecto(m) + carteMembreVerso(m),
+        carteMembreRecto(m) + carteMembreVerso(m) + identitePanel(m),
         `${m.poste} &mdash; ${m.nom} ${m.prenoms || ""}`
       );
     },
     adherents: (m) => {
-      openModal(carteCotisationRecto(m), `Carte de cotisation &mdash; ${m.nom} ${m.prenoms || ""}`);
+      openModal(carteCotisationRecto(m) + identitePanel(m), `Carte de cotisation &mdash; ${m.nom} ${m.prenoms || ""}`);
     },
     cotisants: (m) => {
-      openModal(carteCotisationVerso(m), `Cotisations &mdash; ${m.nom} ${m.prenoms || ""}`);
+      openModal(carteCotisationVerso(m) + identitePanel(m), `Cotisations &mdash; ${m.nom} ${m.prenoms || ""}`);
     }
   };
 
