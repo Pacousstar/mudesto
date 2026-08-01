@@ -190,8 +190,15 @@
     $("#header-periode").textContent = DATA.mutuelle.periodeCarte;
     $("#hero-devise").textContent = `« ${DATA.mutuelle.devise} »`;
 
-    const c = DATA.mutuelle.contact;
-    $("#footer-contact").textContent = [c.adresse, c.telephone, c.email, c.facebook].filter(Boolean).join(" · ") || "Toa-Zéo";
+    const c = DATA.mutuelle.contact || {};
+    const contactItems = [
+      c.adresse ? `<span class="contact-item">${c.adresse}</span>` : "",
+      c.telephone ? `<span class="contact-item">T&eacute;l : ${c.telephone}</span>` : "",
+      c.email ? `<span class="contact-item">Email : ${c.email}</span>` : "",
+      c.facebook ? `<span class="contact-item">Facebook : ${c.facebook}</span>` : "",
+      c.whatsapp ? `<span class="contact-item">WhatsApp : ${c.whatsapp}</span>` : ""
+    ].filter(Boolean);
+    $("#footer-contact").innerHTML = contactItems.join('<span class="contact-sep">&middot;</span>') || "Toa-Z&eacute;o";
 
     $("#grid-bureau").innerHTML = memberGrid(DATA.bureau, "bureau");
     $("#grid-adherents").innerHTML = memberGrid(DATA.adherents, "adherents");

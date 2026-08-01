@@ -241,6 +241,10 @@
       }
 
       function renderTab() {
+        if (currentTab === "mutuelle") {
+          renderMutuelle();
+          return;
+        }
         const list = lists[currentTab];
         const items = list.map((m) => memberRow(m, currentTab)).join("") ||
           "<p style='color:var(--muted);'>Aucun membre dans cette liste.</p>";
@@ -306,6 +310,66 @@
               }
             });
           }
+        });
+      }
+
+      /* ---------- Onglet Mutuelle & tarifs ---------- */
+      function renderMutuelle() {
+        const M = DATA.mutuelle;
+        const bind = (sel, obj, key) => {
+          const el = $("#admin-content").querySelector(sel);
+          el.addEventListener("change", () => { obj[key] = el.value; markDirty(); });
+        };
+        const tarifRow = (cat) => `
+          <div style="display:flex;gap:10px;align-items:center;background:var(--white);border:1px solid var(--border);border-radius:8px;padding:10px 14px;margin-bottom:8px;">
+            <b style="flex:1;">${cat}</b>
+            <label style="font-size:0.75rem;color:var(--muted);">Droit d'adhésion (F)
+              <input class="t-adh" data-cat="${cat}" type="number" value="${DATA.tarifs.droitAdhesion[cat]}" style="width:110px;padding:7px 9px;border:1px solid var(--border);border-radius:6px;margin-top:2px;">
+            </label>
+            <label style="font-size:0.75rem;color:var(--muted);">Cotisation mensuelle (F)
+              <input class="t-cot" data-cat="${cat}" type="number" value="${DATA.tarifs.cotisationMensuelle[cat]}" style="width:110px;padding:7px 9px;border:1px solid var(--border);border-radius:6px;margin-top:2px;">
+            </label>
+          </div>`;
+
+        $("#admin-content").innerHTML = `
+          <div class="note" style="border-color:#b99ed0;background:#f3ecfa;">
+            Ces informations apparaissent dans l'en-tête et le pied de page du site public.
+          </div>
+          <div class="member-row" style="grid-template-columns:1fr;">
+            <div class="member-fields">
+              <label>Nom complet de la mutuelle<input id="m-nomcomplet" value="${(M.nomComplet || "").replace(/"/g, "&quot;")}"></label>
+              <label>Devise / slogan<input id="m-devise" value="${(M.devise || "").replace(/"/g, "&quot;")}"></label>
+              <label>Période des cartes<input id="m-periode" value="${(M.periodeCarte || "").replace(/"/g, "&quot;")}"></label>
+              <label>Adresse<input id="m-adresse" value="${(M.contact.adresse || "").replace(/"/g, "&quot;")}"></label>
+              <label>Téléphone<input id="m-telephone" value="${(M.contact.telephone || "").replace(/"/g, "&quot;")}" placeholder="+225 07 00 00 00 00"></label>
+              <label>Email<input id="m-email" value="${(M.contact.email || "").replace(/"/g, "&quot;")}" placeholder="mudesto@example.com"></label>
+              <label>Facebook<input id="m-facebook" value="${(M.contact.facebook || "").replace(/"/g, "&quot;")}" placeholder="https://facebook.com/..."></label>
+              <label>WhatsApp<input id="m-whatsapp" value="${(M.contact.whatsapp || "").replace(/"/g, "&quot;")}" placeholder="+225 07 00 00 00 00"></label>
+            </div>
+          </div>
+          <h3 style="color:var(--purple);margin:18px 0 10px;">Tarifs (en francs CFA)</h3>
+          ${CATEGORIES.map(tarifRow).join("")}
+        `;
+
+        bind("#m-nomcomplet", M, "nomComplet");
+        bind("#m-devise", M, "devise");
+        bind("#m-periode", M, "periodeCarte");
+        bind("#m-adresse", M.contact, "adresse");
+        bind("#m-telephone", M.contact, "telephone");
+        bind("#m-email", M.contact, "email");
+        bind("#m-facebook", M.contact, "facebook");
+        bind("#m-whatsapp", M.contact, "whatsapp");
+        $("#admin-content").querySelectorAll(".t-adh").forEach((el) => {
+          el.addEventListener("change", () => {
+            DATA.tarifs.droitAdhesion[el.dataset.cat] = Number(el.value) || 0;
+            markDirty();
+          });
+        });
+        $("#admin-content").querySelectorAll(".t-cot").forEach((el) => {
+          el.addEventListener("change", () => {
+            DATA.tarifs.cotisationMensuelle[el.dataset.cat] = Number(el.value) || 0;
+            markDirty();
+          });
         });
       }
 
