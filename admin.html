@@ -72,6 +72,18 @@
     .year-block h5 { color: var(--purple); font-size: 0.8rem; margin-bottom: 4px; }
     .note { background: #fdf3e4; border: 1px solid #f0d9a8; border-radius: 8px; padding: 10px 14px; font-size: 0.85rem; margin-bottom: 18px; }
     .note code { background: #f5e9d6; padding: 1px 6px; border-radius: 4px; }
+    .tab-title {
+      background: var(--purple-soft);
+      color: var(--white);
+      border-radius: 8px;
+      padding: 10px 14px;
+      font-weight: 700;
+      font-size: 0.95rem;
+      margin-bottom: 14px;
+      letter-spacing: 0.3px;
+    }
+    .tab-title .tab-title-action { color: var(--orange); }
+    .btn:disabled { opacity: 0.45; cursor: not-allowed; }
   </style>
 </head>
 <body>
@@ -101,6 +113,8 @@
       <button class="tab" data-tab="cotisants">Cotisation à jour</button>
       <button class="tab" data-tab="mutuelle">Mutuelle &amp; tarifs</button>
     </div>
+
+    <div id="tab-title" class="tab-title"></div>
 
     <div id="save-status" style="display:none;background:#fdf3e4;border:1px solid #f0d9a8;border-radius:8px;padding:10px 14px;font-size:0.9rem;font-weight:700;margin-bottom:14px;color:#8a5a00;">
       &#128190; Modifications non enregistrées &mdash; cliquez sur « Publier sur GitHub » pour les mettre en ligne (sinon elles seront perdues).
@@ -165,6 +179,22 @@
 
       const lists = { bureau: DATA.bureau, adherents: DATA.adherents, cotisants: DATA.cotisants };
       const uid = () => "m" + Date.now().toString(36) + Math.random().toString(36).slice(2, 6);
+
+      /* ---------- Titre de la section active ---------- */
+      const TAB_TITLES = {
+        bureau: "Bureau exécutif",
+        adherents: "Droit d'adhésion payé",
+        cotisants: "Cotisation à jour",
+        mutuelle: "Mutuelle & tarifs"
+      };
+      const tabTitle = $("#tab-title");
+      const btnAdd = $("#btn-add");
+      const setTabTitle = (msg) => { tabTitle.innerHTML = msg; };
+      const updateSectionTitle = () => {
+        btnAdd.disabled = currentTab === "mutuelle";
+        btnAdd.title = currentTab === "mutuelle" ? "Aucun membre ici : cet onglet gère les informations de la mutuelle" : "";
+        setTabTitle(`Vous travaillez sur : <span class="tab-title-action">${TAB_TITLES[currentTab]}</span> — vos modifications ne sont enregistrées qu'après publication.`);
+      };
 
       /* ---------- Photo : redimensionnement + base64 ---------- */
       function fileToDataURL(file, maxW, cb) {
@@ -316,6 +346,12 @@
       /* ---------- Onglet Mutuelle & tarifs ---------- */
       function renderMutuelle() {
         const M = DATA.mutuelle;
+        if (!M.contact) M.contact = {};
+        M.contact.adresse = M.contact.adresse || "";
+        M.contact.telephone = M.contact.telephone || "";
+        M.contact.email = M.contact.email || "";
+        M.contact.facebook = M.contact.facebook || "";
+        M.contact.whatsapp = M.contact.whatsapp || "";
         const bind = (sel, obj, key) => {
           const el = $("#admin-content").querySelector(sel);
           el.addEventListener("change", () => { obj[key] = el.value; markDirty(); });
@@ -379,11 +415,13 @@
         if (!btn) return;
         currentTab = btn.dataset.tab;
         document.querySelectorAll(".tab").forEach((t) => t.classList.toggle("active", t === btn));
+        updateSectionTitle();
         renderTab();
       });
 
       /* ---------- Ajouter ---------- */
-      $("#btn-add").addEventListener("click", () => {
+      btnAdd.addEventListener("click", () => {
+        if (currentTab === "mutuelle") return;
         const m = {
           id: uid(), nom: "NOUVEAU", prenoms: "",
           contact: "", categorie: CATEGORIES[0], numCarte: "", dateAdhesion: "",
@@ -393,7 +431,9 @@
         if (currentTab === "cotisants") m.cotisations = {};
         lists[currentTab].push(m);
         markDirty();
+        setTabTitle(`Membre ajouté dans : <span class="tab-title-action">${TAB_TITLES[currentTab]}</span> — remplissez ses informations puis publiez.`);
         renderTab();
+        window.scrollTo({ top: 0, behavior: "smooth" });
       });
 
       /* ---------- Recharger (annuler) ---------- */
@@ -491,6 +531,7 @@
         URL.revokeObjectURL(a.href);
       });
 
+      updateSectionTitle();
       renderTab();
     })();
   </script>
