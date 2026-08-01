@@ -62,7 +62,7 @@ window.MUDESTO_DATA = {
       "nom": "GNAHE",
       "prenoms": "Goussé Franck",
       "poste": "Président",
-      "contact": "",
+      "contact": "07 77 51 38 53",
       "categorie": "Fonctionnaire",
       "numCarte": "MUD-2026-001",
       "dateAdhesion": "29/07/2020",
