@@ -1,0 +1,293 @@
+/* ============================================================
+   MUDESTO - Feuille de style
+   Couleurs : pourpre #501040 (logo) + orange #f09020 (accents)
+   ============================================================ */
+
+:root {
+  --purple: #501040;
+  --purple-dark: #3a0b2e;
+  --purple-soft: #7a2d63;
+  --orange: #f09020;
+  --orange-dark: #e06030;
+  --bg: #faf6f4;
+  --ink: #2b1a26;
+  --muted: #7a6a74;
+  --white: #ffffff;
+  --border: #e8dde3;
+  --radius: 14px;
+  --shadow: 0 6px 24px rgba(80, 16, 64, 0.14);
+  --card-ratio: 1.585;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+html { scroll-behavior: smooth; }
+
+body {
+  font-family: "Segoe UI", Arial, sans-serif;
+  background: var(--bg);
+  color: var(--ink);
+  line-height: 1.55;
+}
+
+.container { max-width: 1080px; margin: 0 auto; padding: 0 20px; }
+
+/* ---------- En-tête ---------- */
+.site-header {
+  background: linear-gradient(135deg, var(--purple-dark), var(--purple) 60%, var(--purple-soft));
+  color: var(--white);
+  padding: 26px 0;
+  box-shadow: var(--shadow);
+}
+.header-inner { display: flex; align-items: center; gap: 20px; }
+.logo { width: 84px; height: 84px; object-fit: contain; border-radius: 12px; background: var(--white); padding: 6px; }
+.header-titles h1 {
+  font-size: 2.2rem;
+  letter-spacing: 3px;
+  color: var(--orange);
+  font-weight: 800;
+}
+.nom-complet { font-size: 0.95rem; opacity: 0.95; }
+.periode { font-size: 0.85rem; opacity: 0.8; margin-top: 2px; }
+.periode strong { color: var(--orange); }
+
+/* ---------- Héro ---------- */
+.hero { text-align: center; padding: 34px 0 10px; }
+.devise { font-size: 1.25rem; font-style: italic; color: var(--purple); font-weight: 600; margin-bottom: 8px; }
+.hero-note { color: var(--muted); margin-bottom: 16px; }
+.quick-nav { display: flex; justify-content: center; gap: 10px; flex-wrap: wrap; }
+.chip {
+  text-decoration: none;
+  color: var(--white);
+  padding: 10px 18px;
+  border-radius: 999px;
+  font-weight: 600;
+  font-size: 0.92rem;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+  box-shadow: var(--shadow);
+}
+.chip:hover { transform: translateY(-2px); }
+.chip-bureau { background: var(--purple); }
+.chip-adherents { background: var(--purple-soft); }
+.chip-cotisants { background: var(--orange-dark); }
+
+/* ---------- Sections ---------- */
+.section { padding: 30px 0; scroll-margin-top: 16px; }
+.section h2 { font-size: 1.5rem; color: var(--purple); display: flex; align-items: center; gap: 10px; }
+.badge { width: 14px; height: 14px; border-radius: 4px; display: inline-block; }
+.badge-bureau { background: var(--purple); }
+.badge-adherents { background: var(--purple-soft); }
+.badge-cotisants { background: var(--orange-dark); }
+.section-sub { color: var(--muted); margin: 4px 0 18px; }
+
+/* ---------- Grille des membres ---------- */
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+  gap: 16px;
+}
+.member-card {
+  background: var(--white);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 14px;
+  text-align: center;
+  cursor: pointer;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+.member-card:hover { transform: translateY(-4px); box-shadow: var(--shadow); }
+.member-photo {
+  width: 96px;
+  height: 96px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 3px solid var(--purple);
+  margin: 0 auto 10px;
+  background: var(--purple-soft);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--white);
+  font-weight: 700;
+  font-size: 1.6rem;
+}
+.member-name { font-weight: 700; color: var(--purple); font-size: 0.98rem; }
+.member-role { font-size: 0.85rem; color: var(--orange-dark); font-weight: 600; }
+.member-meta { font-size: 0.78rem; color: var(--muted); }
+.member-hint { font-size: 0.72rem; color: var(--purple-soft); margin-top: 6px; font-style: italic; }
+
+/* ---------- Modale ---------- */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(58, 11, 46, 0.75);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  z-index: 100;
+}
+.modal-box {
+  background: var(--white);
+  border-radius: var(--radius);
+  padding: 24px;
+  max-width: 620px;
+  width: 100%;
+  max-height: 90vh;
+  overflow-y: auto;
+  position: relative;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.35);
+}
+.modal-close {
+  position: absolute;
+  top: 10px;
+  right: 14px;
+  border: none;
+  background: var(--purple);
+  color: var(--white);
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  font-size: 1.2rem;
+  cursor: pointer;
+  z-index: 10;
+}
+.modal-close:hover { background: var(--orange-dark); }
+.modal-title { text-align: center; color: var(--purple); margin-bottom: 16px; font-size: 1.1rem; }
+.cards-stack { display: flex; flex-direction: column; gap: 18px; align-items: center; }
+.card-flip-hint { text-align: center; color: var(--muted); font-size: 0.8rem; margin-top: 12px; }
+
+/* ---------- Cartes numériques ---------- */
+.digital-card {
+  width: 100%;
+  max-width: 400px;
+  aspect-ratio: var(--card-ratio);
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.25);
+  display: flex;
+  flex-direction: column;
+}
+
+/* Carte de membre - recto */
+.card-membre-recto {
+  background: linear-gradient(135deg, var(--purple-dark), var(--purple) 55%, var(--purple-soft));
+  color: var(--white);
+  padding: 16px;
+  justify-content: space-between;
+}
+.card-membre-recto .cm-head { display: flex; justify-content: space-between; align-items: center; gap: 8px; }
+.card-membre-recto .cm-logo { width: 44px; height: 44px; border-radius: 8px; background: var(--white); padding: 3px; }
+.card-membre-recto .cm-type {
+  font-size: 0.62rem;
+  letter-spacing: 1.5px;
+  background: var(--orange);
+  color: var(--purple-dark);
+  padding: 4px 10px;
+  border-radius: 999px;
+  font-weight: 800;
+}
+.card-membre-recto .cm-title { font-size: 1.5rem; font-weight: 800; color: var(--orange); letter-spacing: 2px; text-align: center; }
+.card-membre-recto .cm-body { display: flex; gap: 14px; align-items: center; margin-top: 8px; }
+.card-membre-recto .cm-photo {
+  width: 86px;
+  height: 86px;
+  border-radius: 10px;
+  border: 3px solid var(--orange);
+  object-fit: cover;
+  background: var(--white);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--purple);
+  font-weight: 800;
+  font-size: 1.4rem;
+}
+.card-membre-recto .cm-info { font-size: 0.78rem; }
+.card-membre-recto .cm-info b { display: block; font-size: 0.95rem; }
+.card-membre-recto .cm-foot { display: flex; justify-content: space-between; font-size: 0.68rem; opacity: 0.9; margin-top: 6px; }
+
+/* Carte de membre - verso */
+.card-membre-verso {
+  background: var(--white);
+  border: 1px solid var(--border);
+  padding: 16px;
+  justify-content: space-between;
+}
+.card-membre-verso .cv-row { display: flex; justify-content: space-between; font-size: 0.72rem; border-bottom: 1px dashed var(--border); padding: 6px 0; }
+.card-membre-verso .cv-row b { color: var(--purple); }
+.card-membre-verso .cv-qr { text-align: center; margin-top: auto; }
+.card-membre-verso .cv-qr img { width: 72px; height: 72px; }
+.card-membre-verso .cv-qr span { display: block; font-size: 0.6rem; color: var(--muted); }
+
+/* Carte de cotisation - recto */
+.card-cot-recto {
+  background: var(--white);
+  border: 2px solid var(--purple);
+  padding: 12px;
+  justify-content: space-between;
+}
+.card-cot-recto .cc-head { background: var(--purple); color: var(--white); text-align: center; border-radius: 8px; padding: 8px 6px; }
+.card-cot-recto .cc-head h4 { font-size: 0.62rem; letter-spacing: 1px; color: var(--orange); }
+.card-cot-recto .cc-head h3 { font-size: 0.95rem; font-weight: 800; }
+.card-cot-recto .cc-head small { font-size: 0.6rem; opacity: 0.85; }
+.card-cot-recto .cc-body { display: flex; gap: 12px; align-items: center; margin-top: 10px; }
+.card-cot-recto .cc-photo {
+  width: 78px;
+  height: 78px;
+  border-radius: 8px;
+  border: 2px solid var(--orange);
+  object-fit: cover;
+  background: #f4ecf1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--purple);
+  font-weight: 800;
+}
+.card-cot-recto .cc-fields { flex: 1; font-size: 0.7rem; }
+.card-cot-recto .cc-fields label { display: block; border-bottom: 1px solid var(--border); margin-bottom: 6px; padding-bottom: 2px; color: var(--muted); }
+.card-cot-recto .cc-fields label b { color: var(--ink); display: block; }
+.card-cot-recto .cc-foot { display: flex; justify-content: space-between; align-items: flex-end; font-size: 0.62rem; margin-top: 8px; color: var(--muted); }
+.card-cot-recto .cc-foot .sign { color: var(--purple); font-style: italic; }
+
+/* Carte de cotisation - verso (grille des mois) */
+.card-cot-verso {
+  background: var(--white);
+  border: 2px solid var(--purple);
+  padding: 12px;
+}
+.card-cot-verso .cv2-head { text-align: center; background: var(--orange); color: var(--purple-dark); font-weight: 800; border-radius: 6px; padding: 4px; font-size: 0.8rem; letter-spacing: 1px; }
+.cv2-table { width: 100%; border-collapse: collapse; margin-top: 8px; font-size: 0.62rem; }
+.cv2-table th { background: var(--purple); color: var(--white); padding: 4px; font-size: 0.62rem; }
+.cv2-table td { border: 1px solid var(--border); text-align: center; padding: 2px; }
+.cv2-check { color: var(--purple); font-weight: 800; font-size: 0.8rem; }
+.cv2-empty { color: #d9c9d3; }
+.cv2-stamp {
+  margin-top: 8px;
+  text-align: center;
+  color: var(--orange-dark);
+  border: 2px solid var(--orange-dark);
+  border-radius: 8px;
+  padding: 4px;
+  font-weight: 800;
+  font-size: 0.68rem;
+  letter-spacing: 1px;
+  transform: rotate(-2deg);
+  display: inline-block;
+}
+
+/* ---------- Pied de page ---------- */
+.site-footer { background: var(--purple-dark); color: var(--white); margin-top: 40px; padding: 22px 0; }
+.footer-inner { display: flex; align-items: center; gap: 16px; }
+.logo-footer { width: 46px; height: 46px; border-radius: 8px; background: var(--white); padding: 3px; }
+.footer-nom { font-weight: 800; color: var(--orange); letter-spacing: 2px; }
+.site-footer p { font-size: 0.82rem; opacity: 0.85; }
+
+/* ---------- Responsive ---------- */
+@media (max-width: 560px) {
+  .header-titles h1 { font-size: 1.6rem; }
+  .logo { width: 64px; height: 64px; }
+  .grid { grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); }
+  .digital-card { max-width: 340px; }
+}
