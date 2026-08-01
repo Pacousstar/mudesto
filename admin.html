@@ -88,7 +88,7 @@
 
   <div class="admin-wrap">
     <h1>Gestion des membres</h1>
-    <p class="admin-sub">Ajoutez, modifiez ou supprimez les membres. Les photos sont redimensionnées automatiquement. Téléchargez ensuite le fichier <code>data.js</code> et remplacez celui du dossier <code>site/data/</code>.</p>
+    <p class="admin-sub">Ajoutez, modifiez ou supprimez les membres (photos, cotisations...). Puis cliquez sur <strong>« Publier sur GitHub »</strong> : le site public est mis à jour automatiquement en 1-2 minutes.</p>
 
     <div class="note">
       <strong>Attention :</strong> cette page fonctionne en local (aucune donnée ne part sur internet). Après export, remplacez le fichier
@@ -107,6 +107,32 @@
       <button class="btn secondary" id="btn-export">Télécharger data.js</button>
       <button class="btn danger" id="btn-reload">Annuler les modifications</button>
     </div>
+
+    <div class="note" style="border-color:#b99ed0;background:#f3ecfa;">
+      <strong>Mise à jour automatique :</strong> après vos modifications, cliquez sur
+      <strong>« Publier sur GitHub »</strong> ci-dessous. Le site
+      <code>pacousstar.github.io/mudesto</code> sera à jour en 1-2 minutes, sans rien télécharger.
+    </div>
+
+    <div class="admin-actions" style="align-items:center;">
+      <button class="btn" id="btn-publish" style="background:var(--purple);color:#fff;">Publier sur GitHub (MAJ automatique)</button>
+      <input type="password" id="token-input" placeholder="Coller votre jeton GitHub (voir aide ci-dessous)"
+             style="flex:1;min-width:240px;padding:10px 12px;border:2px solid var(--border);border-radius:8px;font-size:0.9rem;">
+      <span id="pub-status" style="font-weight:700;"></span>
+    </div>
+    <details style="margin-bottom:18px;font-size:0.82rem;color:var(--muted);">
+      <summary>Comment créer le jeton GitHub (2 minutes, à faire une seule fois)</summary>
+      <ol style="margin:8px 0 0 18px;line-height:1.7;">
+        <li>Ouvrez <a href="https://github.com/settings/tokens?type=beta" target="_blank">github.com/settings/tokens?type=beta</a> (connecté en <strong>Pacousstar</strong>)</li>
+        <li>Cliquez <strong>Generate new token</strong> → nommez-le <code>mudesto-admin</code></li>
+        <li>Durée : <strong>No expiration</strong> (ou une durée à votre choix)</li>
+        <li>Dans <strong>Repository access</strong> : choisissez <em>Only select repositories</em> → sélectionnez <code>mudesto</code></li>
+        <li>Dans <strong>Permissions</strong> → <em>Contents</em> → choisissez <strong>Read and write</strong></li>
+        <li>Cliquez <strong>Generate token</strong> puis <strong>copiez le jeton</strong> (affiché une seule fois)</li>
+        <li>Collez-le dans le champ ci-dessus puis cliquez <strong>Publier sur GitHub</strong></li>
+      </ol>
+      <p style="margin-top:8px;">Le jeton est enregistré <strong>uniquement dans votre navigateur</strong> (aucun serveur) et limité au seul dépôt mudesto.</p>
+    </details>
 
     <div id="admin-content"></div>
   </div>
@@ -292,6 +318,73 @@
       $("#btn-reload").addEventListener("click", () => {
         if (confirm("Annuler toutes les modifications non exportées ?")) {
           location.reload();
+        }
+      });
+
+      /* ---------- Publier sur GitHub (MAJ automatique) ---------- */
+      const TOKEN_KEY = "mudesto_github_token";
+      const REPO = "Pacousstar/mudesto";
+      const FILE_PATH = "data/data.js";
+
+      const tokenInput = $("#token-input");
+      const pubStatus = $("#pub-status");
+      tokenInput.value = localStorage.getItem(TOKEN_KEY) || "";
+
+      const status = (msg, ok) => {
+        pubStatus.textContent = msg;
+        pubStatus.style.color = ok === undefined ? "var(--muted)" : ok ? "#1b8a3a" : "#c0392b";
+      };
+
+      const buildDataJs = () =>
+        "/* ============================================================\n" +
+        "   MUDESTO - Base de données des membres (générée par admin.html)\n" +
+        "   ============================================================ */\n\n" +
+        "window.MUDESTO_DATA = " + JSON.stringify(DATA, null, 2) + ";\n";
+
+      $("#btn-publish").addEventListener("click", async () => {
+        const token = tokenInput.value.trim();
+        if (!token) {
+          status("Collez d'abord votre jeton GitHub (voir l'aide).", false);
+          return;
+        }
+        localStorage.setItem(TOKEN_KEY, token);
+        status("Publication en cours...", undefined);
+        $("#btn-publish").disabled = true;
+        try {
+          const headers = {
+            "Authorization": "Bearer " + token,
+            "Accept": "application/vnd.github+json",
+            "User-Agent": "MUDESTO-admin"
+          };
+          let sha = null;
+          const getRes = await fetch("https://api.github.com/repos/" + REPO + "/contents/" + FILE_PATH, { headers });
+          if (getRes.ok) sha = (await getRes.json()).sha;
+          else if (getRes.status !== 404) throw new Error("API GitHub : " + getRes.status);
+
+          const putRes = await fetch("https://api.github.com/repos/" + REPO + "/contents/" + FILE_PATH, {
+            method: "PUT",
+            headers: { ...headers, "Content-Type": "application/json" },
+            body: JSON.stringify({
+              message: "Mise à jour des membres (" + new Date().toLocaleString("fr-FR") + ")",
+              content: btoa(unescape(encodeURIComponent(buildDataJs()))),
+              sha: sha || undefined
+            })
+          });
+          if (!putRes.ok) {
+            const err = await putRes.json().catch(() => ({}));
+            const msg = (err.message || "").toLowerCase();
+            if (msg.includes("authentication") || msg.includes("token")) {
+              status("Jeton invalide ou sans permission. Recréez-le (aide ci-dessus).", false);
+            } else {
+              status("Erreur GitHub : " + (err.message || putRes.status), false);
+            }
+            return;
+          }
+          status("Publié ! Le site sera à jour dans 1-2 min ✓", true);
+        } catch (e) {
+          status("Erreur : " + e.message, false);
+        } finally {
+          $("#btn-publish").disabled = false;
         }
       });
 
