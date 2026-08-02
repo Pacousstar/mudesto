@@ -548,7 +548,7 @@
         };
         if (currentTab === "bureau") m.poste = "Membre du bureau";
         if (currentTab === "cotisants") m.cotisations = {};
-        lists[currentTab].push(m);
+        lists[currentTab].unshift(m);
         markDirty();
         setTabTitle(`Membre ajouté dans : <span class="tab-title-action">${TAB_TITLES[currentTab]}</span> — remplissez ses informations puis publiez.`);
         renderTab();
