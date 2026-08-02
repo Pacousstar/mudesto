@@ -108,8 +108,9 @@
         <div class="cv-row"><span>Contact</span><b>${m.contact || "—"}</b></div>
       </div>
       <div class="cv-qr">
-        <img src="${QR_SRC}" alt="QR code MUDESTO">
-        <span>Scannez pour plus d'informations</span>
+        ${DATA.mutuelle.qrcodeVisible === false
+          ? `<div class="qr-disabled">QR désactivé</div><span>Service temporairement indisponible</span>`
+          : `<img src="${QR_SRC}" alt="QR code MUDESTO"><span>Scannez pour plus d'informations</span>`}
       </div>
     </div>`;
   }
@@ -259,6 +260,13 @@
   /* ---------- Initialisation ---------- */
 
   function init() {
+    if (DATA.mutuelle.qrcodeVisible === false) {
+      const main = document.querySelector("main");
+      if (main) main.hidden = true;
+      $("#qr-off").hidden = false;
+      document.title = "MUDESTO - Service temporairement indisponible";
+    }
+
     $("#hero-devise").textContent = `« ${DATA.mutuelle.devise} »`;
 
     const c = DATA.mutuelle.contact || {};

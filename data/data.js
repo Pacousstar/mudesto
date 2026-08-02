@@ -7,6 +7,7 @@ window.MUDESTO_DATA = {
     "nom": "MUDESTO",
     "nomComplet": "Mutuelle pour le Développement et la Solidarité de Toa-Zéo",
     "periodeCarte": "2026 - 2031",
+    "qrcodeVisible": true,
     "devise": "Ensemble, pour le développement et l'entraide de Toa-Zéo",
     "contact": {
       "telephone": "+225 07 77 51 38 53",

@@ -88,6 +88,19 @@
     }
     .tab-title .tab-title-action { color: var(--orange); }
     .btn:disabled { opacity: 0.45; cursor: not-allowed; }
+    .qr-toggle {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      background: #e9f7ee;
+      border: 1px solid #9bd4ab;
+      border-radius: 8px;
+      padding: 10px 14px;
+    }
+    .qr-toggle span { display: flex; flex-direction: column; gap: 2px; }
+    .qr-toggle small { font-weight: 400; color: var(--muted); font-size: 0.72rem; }
+    .qr-toggle input { width: 22px; height: 22px; accent-color: #1b8a3a; cursor: pointer; }
   </style>
 </head>
 <body>
@@ -507,6 +520,13 @@
               <label>Email<input id="m-email" value="${(M.contact.email || "").replace(/"/g, "&quot;")}" placeholder="mudesto@example.com"></label>
               <label>Facebook<input id="m-facebook" value="${(M.contact.facebook || "").replace(/"/g, "&quot;")}" placeholder="https://facebook.com/..."></label>
               <label>WhatsApp<input id="m-whatsapp" value="${(M.contact.whatsapp || "").replace(/"/g, "&quot;")}" placeholder="+225 07 00 00 00 00"></label>
+              <label class="qr-toggle">
+                <span>
+                  QR code visible
+                  <small>Si désactivé : le QR est remplacé par « QR désactivé » sur les cartes, et un scan affiche « Service temporairement indisponible ».</small>
+                </span>
+                <input type="checkbox" id="m-qr" ${M.qrcodeVisible !== false ? "checked" : ""}>
+              </label>
             </div>
           </div>
           <h3 style="color:var(--purple);margin:18px 0 10px;">Tarifs (en francs CFA)</h3>
@@ -521,6 +541,10 @@
         bind("#m-email", M.contact, "email");
         bind("#m-facebook", M.contact, "facebook");
         bind("#m-whatsapp", M.contact, "whatsapp");
+        $("#m-qr").addEventListener("change", (e) => {
+          M.qrcodeVisible = e.target.checked;
+          markDirty();
+        });
         $("#admin-content").querySelectorAll(".t-adh").forEach((el) => {
           el.addEventListener("change", () => {
             DATA.tarifs.droitAdhesion[el.dataset.cat] = Number(el.value) || 0;
