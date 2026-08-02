@@ -259,7 +259,6 @@
   /* ---------- Initialisation ---------- */
 
   function init() {
-    $("#header-periode").textContent = DATA.mutuelle.periodeCarte;
     $("#hero-devise").textContent = `« ${DATA.mutuelle.devise} »`;
 
     const c = DATA.mutuelle.contact || {};
