@@ -280,11 +280,11 @@ body {
 
 /* ---------- Pied de page ---------- */
 .site-footer { background: var(--purple-dark); color: var(--white); margin-top: 40px; padding: 22px 0; }
-.footer-inner { display: flex; align-items: center; gap: 16px; flex-wrap: wrap; }
+.footer-inner { display: flex; align-items: center; justify-content: center; gap: 16px; flex-wrap: wrap; text-align: center; }
 .logo-footer { width: 46px; height: 46px; border-radius: 8px; background: var(--white); padding: 3px; }
 .footer-nom { font-weight: 800; color: var(--orange); letter-spacing: 2px; }
 .site-footer p { font-size: 0.82rem; opacity: 0.85; }
-#footer-contact { display: flex; flex-wrap: wrap; align-items: center; row-gap: 4px; }
+#footer-contact { display: flex; flex-wrap: wrap; align-items: center; justify-content: center; row-gap: 4px; }
 .contact-item { white-space: nowrap; }
 .contact-sep { margin: 0 8px; opacity: 0.5; }
 

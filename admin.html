@@ -133,7 +133,9 @@
       <strong>Mise à jour automatique :</strong> après vos modifications, cliquez sur
       <strong>« Publier sur GitHub »</strong> ci-dessous. Le site
       <code>pacousstar.github.io/mudesto</code> sera à jour en ~1 minute — le cache du
-      navigateur est géré automatiquement à chaque publication.
+      navigateur est géré automatiquement à chaque publication. Si rien ne change au bout
+      de 2 minutes, faites un <strong>rechargement forcé (Ctrl+F5)</strong> une fois :
+      GitHub conserve le cache de la page jusqu'à 10 minutes.
     </div>
 
     <div class="admin-actions" style="align-items:center;">
@@ -534,9 +536,11 @@
           const ts = Date.now().toString(36);
           await putRepoFile(token, FILE_PATH, buildDataJs(), "Mise à jour des membres (" + new Date().toLocaleString("fr-FR") + ")");
 
-          /* Anti-cache : force le navigateur à recharger data/data.js */
+          /* Anti-cache : force le navigateur à recharger data.js et les assets */
           const idx = await getRepoFile(token, "index.html");
-          const newIdx = idx.text.replace(/src="data\/data\.js(?:\?v=[^"]*)?"/g, `src="data/data.js?v=${ts}"`);
+          const newIdx = idx.text
+            .replace(/src="data\/data\.js(?:\?v=[^"]*)?"/g, `src="data/data.js?v=${ts}"`)
+            .replace(/(src|href)="(assets\/[^"?]+)(?:\?v=[^"]*)?"/g, `$1="$2?v=${ts}"`);
           if (newIdx !== idx.text) {
             await putRepoFile(token, "index.html", newIdx, "Anti-cache navigateur : version des données (v" + ts + ")");
           }
