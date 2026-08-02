@@ -122,8 +122,8 @@ body {
   inset: 0;
   background: rgba(58, 11, 46, 0.75);
   display: flex;
-  overflow-y: auto;
-  -webkit-overflow-scrolling: touch;
+  align-items: center;
+  justify-content: center;
   padding: 20px;
   z-index: 100;
 }
@@ -134,8 +134,8 @@ body {
   padding: 24px;
   max-width: 620px;
   width: 100%;
-  margin: auto;
-  overflow: visible;
+  max-height: 90vh;
+  overflow-y: auto;
   position: relative;
   box-shadow: 0 20px 60px rgba(0, 0, 0, 0.35);
 }
@@ -265,7 +265,7 @@ body {
 .cv2-check { color: var(--purple); font-weight: 800; font-size: 0.8rem; }
 .cv2-empty { color: #d9c9d3; }
 .cv2-summary {
-  margin: 8px 0;
+  margin-top: 8px;
   background: #f4ecf1;
   border: 1px dashed var(--purple);
   border-radius: 8px;
@@ -277,29 +277,6 @@ body {
 }
 .cv2-summary b { color: var(--purple); }
 .cv2-summary .cv2-total { color: var(--orange-dark); }
-.cv2-years {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 1px 14px;
-}
-.cv2-year {
-  display: flex;
-  justify-content: space-between;
-  gap: 8px;
-  border-top: 1px dashed var(--border);
-  padding-top: 3px;
-}
-.cv2-year.ok b { color: #1b8a3a; }
-.cv2-year-montant { color: var(--muted); }
-.cv2-total-row {
-  border-top: 1px dashed var(--border);
-  padding-top: 3px;
-  display: flex;
-  justify-content: space-between;
-  flex-wrap: wrap;
-  gap: 4px 8px;
-}
-.cv2-restant { color: var(--muted); }
 .cv2-stamp {
   margin-top: 8px;
   text-align: center;
