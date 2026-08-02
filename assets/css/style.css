@@ -67,17 +67,17 @@ body {
   box-shadow: var(--shadow);
 }
 .chip:hover { transform: translateY(-2px); }
-.chip-bureau { background: var(--purple); }
-.chip-adherents { background: #1b8a3a; }
-.chip-cotisants { background: #ff7f00; }
+.chip-bureau { background: #ff7f00; }
+.chip-adherents { background: #ffffff; color: var(--purple); border: 2px solid var(--purple); }
+.chip-cotisants { background: #1b8a3a; }
 
 /* ---------- Sections ---------- */
 .section { padding: 30px 0; scroll-margin-top: 16px; }
 .section h2 { font-size: 1.5rem; color: var(--purple); display: flex; align-items: center; gap: 10px; }
 .badge { width: 14px; height: 14px; border-radius: 4px; display: inline-block; }
-.badge-bureau { background: var(--purple); }
-.badge-adherents { background: #1b8a3a; }
-.badge-cotisants { background: #ff7f00; }
+.badge-bureau { background: #ff7f00; }
+.badge-adherents { background: #ffffff; border: 1px solid var(--purple); }
+.badge-cotisants { background: #1b8a3a; }
 .section-sub { color: var(--muted); margin: 4px 0 18px; }
 
 /* ---------- Grille des membres ---------- */
