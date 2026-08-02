@@ -272,6 +272,8 @@
         <div class="member-row" data-id="${m.id}">
           ${isCotisant ? `
           <div class="copy-hint">Nom + Prénoms suffisent : les autres champs (catégorie, contact, n° de carte, photo, identité…) se copient automatiquement depuis « Droit d'adhésion payé » si le membre y existe déjà.</div>
+          <div class="copy-notice" style="display:none;"></div>` : kind === "adherents" ? `
+          <div class="copy-hint">Nom + Prénoms suffisent : les autres champs (catégorie, contact, n° de carte, photo, identité…) se copient automatiquement depuis « Bureau exécutif » si le membre y existe déjà.</div>
           <div class="copy-notice" style="display:none;"></div>` : ""}
           <div class="member-fields">
             <label>Nom<input class="f-nom" value="${(m.nom || "").replace(/"/g, "&quot;")}"></label>
@@ -337,7 +339,12 @@
           const m = list.find((x) => x.id === id);
           if (!m) return;
 
-          if (currentTab === "cotisants") {
+          const COPY_FROM = {
+            cotisants: { list: lists.adherents, label: "« Droit d'adhésion payé »" },
+            adherents: { list: lists.bureau, label: "« Bureau exécutif »" }
+          };
+          const copyFrom = COPY_FROM[currentTab];
+          if (copyFrom) {
             const norm = (s) => (s || "").trim().toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
             const showCopyNotice = (ok, txt) => {
               const notice = row.querySelector(".copy-notice");
@@ -347,11 +354,11 @@
                 notice.textContent = txt;
               }
             };
-            const autoFillFromAdherent = () => {
+            const autoFillFromSource = () => {
               const nom = row.querySelector(".f-nom").value;
               const prenoms = row.querySelector(".f-prenoms").value;
               if (!nom && !prenoms) return;
-              const src = lists.adherents.find((a) => norm(a.nom) === norm(nom) && norm(a.prenoms) === norm(prenoms));
+              const src = copyFrom.list.find((a) => norm(a.nom) === norm(nom) && norm(a.prenoms) === norm(prenoms));
               if (src) {
                 ["categorie", "contact", "numCarte", "dateAdhesion", "dateNaissance", "lieuNaissance", "profession", "pere", "mere", "quartier", "residence", "photo"].forEach((f) => { m[f] = src[f]; });
                 markDirty();
@@ -361,14 +368,14 @@
                 if (n2) {
                   n2.style.display = "";
                   n2.className = "copy-notice ok";
-                  n2.textContent = "Données copiées depuis « Droit d'adhésion payé » : " + src.nom + " " + (src.prenoms || "") + " — catégorie, contact, n° de carte, photo, etc.";
+                  n2.textContent = "Données copiées depuis " + copyFrom.label + " : " + src.nom + " " + (src.prenoms || "") + " — catégorie, contact, n° de carte, photo, etc.";
                 }
               } else {
-                showCopyNotice("ko", "Aucun membre « " + nom + " " + prenoms + " » trouvé dans « Droit d'adhésion payé » — remplissez les champs manuellement.");
+                showCopyNotice("ko", "Aucun membre « " + nom + " " + prenoms + " » trouvé dans " + copyFrom.label + " — remplissez les champs manuellement.");
               }
             };
             row.querySelectorAll(".f-nom, .f-prenoms").forEach((el) => {
-              el.addEventListener("change", autoFillFromAdherent);
+              el.addEventListener("change", autoFillFromSource);
             });
           }
 
