@@ -182,6 +182,24 @@ window.MUDESTO_DATA = {
       "quartier": "Gao",
       "residence": "",
       "photo": null
+    },
+    {
+      "id": "b8",
+      "nom": "MOUHO",
+      "prenoms": "Marcelle",
+      "poste": "Membre",
+      "contact": "+33 6 20 75 57 37",
+      "categorie": "Personne âgée",
+      "numCarte": "MUD-2026-005",
+      "dateAdhesion": "",
+      "dateNaissance": "01/01/1948",
+      "lieuNaissance": "Toa-Zéo",
+      "profession": "Retraitée",
+      "pere": "Bohouo Ladji",
+      "mere": "Gnohon Kouty",
+      "quartier": "Bongné-Zagnan",
+      "residence": "",
+      "photo": null
     }
   ],
   "adherents": [
