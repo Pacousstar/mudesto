@@ -38,15 +38,25 @@
       adherents: "Voir la carte de cotisation",
       cotisants: "Voir les cotisations"
     };
-    return list.map((m) => `
+    const anneeCourante = ANNEES.includes(String(new Date().getFullYear())) ? String(new Date().getFullYear()) : ANNEES[0];
+    return list.map((m) => {
+      let certif = "";
+      if (kind === "cotisants") {
+        const cot = m.cotisations || {};
+        const payes = cot[anneeCourante] ? Object.values(cot[anneeCourante]).filter(Boolean).length : 0;
+        if (payes === 12) certif = `<div class="member-cert">✓ Certifié à jour ${anneeCourante}</div>`;
+      }
+      return `
       <div class="member-card" data-id="${m.id}" data-kind="${kind}">
         ${avatar(m, "member-photo")}
+        ${certif}
         <div class="member-name">${m.nom} ${m.prenoms ? m.prenoms : ""}</div>
         ${kind === "bureau" ? `<div class="member-role">${m.poste}</div>` : `<div class="member-role">${m.categorie}</div>`}
         <div class="member-meta">${m.numCarte ? m.numCarte : ""}</div>
         <div class="member-hint">${hints[kind]}</div>
       </div>
-    `).join("");
+    `;
+    }).join("");
   }
 
   /* ---------- Cartes numériques ---------- */
