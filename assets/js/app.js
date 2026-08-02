@@ -153,6 +153,14 @@
     const anneeCourante = ANNEES.includes(String(new Date().getFullYear())) ? String(new Date().getFullYear()) : ANNEES[0];
     const payesAnneeCourante = cot[anneeCourante] ? Object.values(cot[anneeCourante]).filter(Boolean).length : 0;
     const resteAnneeCourante = Math.max(0, 12 * montant - payesAnneeCourante * montant);
+    const dernierExigible = Math.min(6, new Date().getMonth() - 1);
+    let certifie = true;
+    for (let i = 0; i <= dernierExigible; i++) {
+      if (!(cot[anneeCourante] && cot[anneeCourante][MOIS[i]])) {
+        certifie = false;
+        break;
+      }
+    }
     const ABBR = ["Janv", "Févr", "Mars", "Avr", "Mai", "Juin", "Juil", "Août", "Sept", "Oct", "Nov", "Déc"];
     const yearsRows = ANNEES.map((a) => {
       const payes = cot[a] ? Object.values(cot[a]).filter(Boolean).length : 0;
@@ -174,6 +182,7 @@
     return `
     <div class="digital-card card-cot-verso">
       <div class="cv2-head">
+        ${certifie ? `<div class="cv2-cert">Certifié</div>` : ""}
         <div>&middot; COTISATION MENSUELLE &middot;</div>
         <div class="cv2-nom">${m.nom} ${m.prenoms || ""}</div>
         <div class="cv2-num">N° ${m.numCarte || "—"}</div>

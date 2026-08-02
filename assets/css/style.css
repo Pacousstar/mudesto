@@ -274,9 +274,10 @@ body {
   border: 2px solid var(--purple);
   padding: 12px;
 }
-.card-cot-verso .cv2-head { text-align: center; background: var(--orange); color: var(--purple-dark); font-weight: 800; border-radius: 6px; padding: 10px 8px; letter-spacing: 1px; display: flex; flex-direction: column; gap: 3px; }
+.card-cot-verso .cv2-head { position: relative; text-align: center; background: var(--orange); color: var(--purple-dark); font-weight: 800; border-radius: 6px; padding: 10px 8px; letter-spacing: 1px; display: flex; flex-direction: column; gap: 3px; }
 .cv2-head .cv2-nom { font-size: 1.15rem; }
 .cv2-head .cv2-num { font-weight: 600; font-size: 0.78rem; color: var(--purple); }
+.cv2-head .cv2-cert { position: absolute; left: 10px; top: 50%; transform: translateY(-50%); background: #1b8a3a; color: #fff; font-weight: 800; font-size: 0.7rem; letter-spacing: 1px; padding: 3px 8px; border-radius: 999px; white-space: nowrap; }
 .cv2-summary {
   margin: 10px 0;
   background: #f4ecf1;
