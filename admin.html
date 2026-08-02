@@ -171,6 +171,20 @@
 
       const $ = (s) => document.querySelector(s);
       const CATEGORIES = Object.keys(DATA.tarifs.cotisationMensuelle);
+      const PROFESSIONS = [
+        "Administrateur d'entreprise",
+        "Chef d'entreprise",
+        "Professeur de Lycée",
+        "Attachée de Direction",
+        "Infirmière",
+        "Retraité(e)",
+        "Opérateur économique",
+        "Étudiant",
+        "Élève",
+        "Salarié",
+        "Ménagère",
+        "Sans emploi"
+      ];
       const MOIS = DATA.mois;
       const ANNEES = DATA.annees;
 
@@ -247,17 +261,26 @@
             <label>Nom<input class="f-nom" value="${(m.nom || "").replace(/"/g, "&quot;")}"></label>
             <label>Prénoms<input class="f-prenoms" value="${(m.prenoms || "").replace(/"/g, "&quot;")}"></label>
             ${isBureau ? `<label>Poste<input class="f-poste" value="${(m.poste || "").replace(/"/g, "&quot;")}"></label>` : ""}
+            ${isBureau ? `
+            <label>Profession
+              <select class="f-prof-select">
+                <option value="">&mdash; S&eacute;lectionner &mdash;</option>
+                ${PROFESSIONS.map((p) => `<option>${p}</option>`).join("")}
+                <option value="__autre__">Autre : &agrave; pr&eacute;ciser</option>
+              </select>
+              <input class="f-prof-autre" placeholder="Précisez la profession" style="display:none;">
+            </label>` : `
             <label>Catégorie
               <select class="f-categorie">
                 ${CATEGORIES.map((c) => `<option ${c === m.categorie ? "selected" : ""}>${c}</option>`).join("")}
               </select>
-            </label>
+            </label>`}
             <label>Contact<input class="f-contact" value="${(m.contact || "").replace(/"/g, "&quot;")}"></label>
             <label>Numéro de carte<input class="f-num" value="${(m.numCarte || "").replace(/"/g, "&quot;")}"></label>
             <label>Date d'adhésion<input class="f-date" value="${(m.dateAdhesion || "").replace(/"/g, "&quot;")}" placeholder="JJ/MM/AAAA"></label>
             <label>Date de naissance<input class="f-ddn" value="${(m.dateNaissance || "").replace(/"/g, "&quot;")}" placeholder="JJ/MM/AAAA"></label>
             <label>Lieu de naissance<input class="f-ldn" value="${(m.lieuNaissance || "").replace(/"/g, "&quot;")}"></label>
-            <label>Profession<input class="f-prof" value="${(m.profession || "").replace(/"/g, "&quot;")}"></label>
+            ${isBureau ? "" : `<label>Profession<input class="f-prof" value="${(m.profession || "").replace(/"/g, "&quot;")}"></label>`}
             <label>Nom du père<input class="f-pere" value="${(m.pere || "").replace(/"/g, "&quot;")}"></label>
             <label>Nom de la mère<input class="f-mere" value="${(m.mere || "").replace(/"/g, "&quot;")}"></label>
             <label>Quartier<input class="f-quartier" value="${(m.quartier || "").replace(/"/g, "&quot;")}"></label>
@@ -335,6 +358,35 @@
               fileToDataURL(f, 1000, (dataUrl) => { m[el.dataset.field] = dataUrl; markDirty(); });
             });
           });
+
+          const profSelect = row.querySelector(".f-prof-select");
+          if (profSelect) {
+            const autre = row.querySelector(".f-prof-autre");
+            const setAutre = (show, val) => {
+              autre.style.display = show ? "" : "none";
+              if (val !== undefined) autre.value = val;
+            };
+            const cur = m.profession || "";
+            if (PROFESSIONS.includes(cur)) {
+              profSelect.value = cur;
+            } else if (cur) {
+              profSelect.value = "__autre__";
+              setAutre(true, cur);
+            }
+            profSelect.addEventListener("change", () => {
+              if (profSelect.value === "__autre__") {
+                setAutre(true);
+              } else {
+                m.profession = profSelect.value;
+                setAutre(false, "");
+                markDirty();
+              }
+            });
+            autre.addEventListener("change", () => {
+              m.profession = autre.value;
+              markDirty();
+            });
+          }
 
           row.querySelectorAll(".cot-check").forEach((cb) => {
             cb.addEventListener("change", () => {

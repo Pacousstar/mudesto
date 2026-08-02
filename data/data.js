@@ -86,7 +86,7 @@ window.MUDESTO_DATA = {
       "dateAdhesion": "",
       "dateNaissance": "13/09/1960",
       "lieuNaissance": "Toa-Zèo",
-      "profession": "Retraité",
+      "profession": "Retraité(e)",
       "pere": "SAHIN Prosper",
       "mere": "SELA Pauline",
       "quartier": "Zouahe",
