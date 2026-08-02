@@ -9,11 +9,11 @@ window.MUDESTO_DATA = {
     "periodeCarte": "2026 - 2031",
     "devise": "Ensemble, pour le développement et l'entraide de Toa-Zéo",
     "contact": {
-      "telephone": "+225 0151041647",
-      "email": "pacous2000@gmail.com",
+      "telephone": "+225 07 77 51 38 53",
+      "email": "info@mudesto.org",
       "adresse": "Toa-Zéo",
-      "facebook": "facebook.com",
-      "whatsapp": "+225 0707801817"
+      "facebook": "mudesto/facebook.com",
+      "whatsapp": "+225 07 77 51 38 53"
     }
   },
   "tarifs": {
