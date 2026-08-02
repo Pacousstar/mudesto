@@ -342,5 +342,12 @@ body {
   .header-titles h1 { font-size: 1.6rem; }
   .logo { width: 64px; height: 64px; }
   .grid { grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); }
-  .digital-card { max-width: 340px; }
+  .modal-box { padding: 16px; }
+  .digital-card { max-width: 340px; aspect-ratio: auto; }
+  .card-membre-recto .cm-logo { width: 36px; height: 36px; }
+  .card-membre-recto .cm-title { font-size: 1.25rem; }
+  .card-membre-recto .cm-photo { width: 68px; height: 68px; }
+  .card-membre-recto .cm-body { gap: 10px; }
+  .card-cot-recto .cc-photo { width: 62px; height: 62px; }
+  .card-cot-recto .cc-body { gap: 10px; }
 }
