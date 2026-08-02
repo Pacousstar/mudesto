@@ -130,14 +130,6 @@
       return `<img src="${m.carteCotisationVerso}" alt="Carte de cotisation verso" class="digital-card">`;
     }
     const cot = m.cotisations || {};
-    const rows = MOIS.map((mois) => {
-      const cells = ANNEES.map((annee) => {
-        const paye = !!(cot[annee] && cot[annee][mois]);
-        return paye ? '<td class="cv2-check">&#10003;</td>' : '<td class="cv2-empty">&middot;</td>';
-      }).join("");
-      return `<tr><td>${mois}</td>${cells}</tr>`;
-    }).join("");
-    const cols = ANNEES.map((a) => `<th>${a}</th>`).join("");
     const aJour = Object.values(cot).flatMap((y) => Object.values(y)).filter(Boolean).length;
     const montant = DATA.tarifs.cotisationMensuelle[m.categorie] || 0;
     const total = aJour * montant;
@@ -164,7 +156,11 @@
     }).join("");
     return `
     <div class="digital-card card-cot-verso">
-      <div class="cv2-head">COTISATION MENSUELLE &middot; ${m.nom} ${m.prenoms || ""} &middot; N° ${m.numCarte || "—"}</div>
+      <div class="cv2-head">
+        <div>&middot; COTISATION MENSUELLE &middot;</div>
+        <div class="cv2-nom">${m.nom} ${m.prenoms || ""}</div>
+        <div class="cv2-num">N° ${m.numCarte || "—"}</div>
+      </div>
       <div class="cv2-summary">
         <div>Catégorie : <b>${m.categorie || "—"}</b> &middot; Cotisation mensuelle : <b>${montant ? formatFCFA(montant) + "/mois" : "—"}</b></div>
         <div class="cv2-years">${yearsRows}</div>
@@ -173,10 +169,6 @@
           ${montant ? `<span class="cv2-restant">Reste &agrave; cotiser ${anneeCourante} : ${formatFCFA(resteAnneeCourante)}</span>` : ""}
         </div>
       </div>
-      <table class="cv2-table">
-        <tr><th>Mois</th>${cols}</tr>
-        ${rows}
-      </table>
       <div style="text-align:center;margin-top:6px;">
         <span class="cv2-stamp">Vu par la trésorière &middot; ${aJour} mois payé${aJour > 1 ? "s" : ""}</span>
       </div>

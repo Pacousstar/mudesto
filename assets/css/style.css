@@ -143,10 +143,6 @@ body {
   max-width: 760px;
 }
 .modal-wide .digital-card { max-width: 700px; }
-.modal-wide .cv2-table { font-size: 0.74rem; }
-.modal-wide .cv2-table th,
-.modal-wide .cv2-table td { padding: 5px 7px; }
-.modal-wide .cv2-head { font-size: 0.9rem; }
 .modal-wide .cv2-summary { font-size: 0.78rem; }
 .modal-close {
   position: absolute;
@@ -267,33 +263,30 @@ body {
   border: 2px solid var(--purple);
   padding: 12px;
 }
-.card-cot-verso .cv2-head { text-align: center; background: var(--orange); color: var(--purple-dark); font-weight: 800; border-radius: 6px; padding: 4px; font-size: 0.8rem; letter-spacing: 1px; }
-.cv2-table { width: 100%; border-collapse: collapse; margin-top: 8px; font-size: 0.62rem; }
-.cv2-table th { background: var(--purple); color: var(--white); padding: 4px; font-size: 0.62rem; }
-.cv2-table td { border: 1px solid var(--border); text-align: center; padding: 2px; }
-.cv2-check { color: var(--purple); font-weight: 800; font-size: 0.8rem; }
-.cv2-empty { color: #d9c9d3; }
+.card-cot-verso .cv2-head { text-align: center; background: var(--orange); color: var(--purple-dark); font-weight: 800; border-radius: 6px; padding: 10px 8px; letter-spacing: 1px; display: flex; flex-direction: column; gap: 3px; }
+.cv2-head .cv2-nom { font-size: 1.15rem; }
+.cv2-head .cv2-num { font-weight: 600; font-size: 0.78rem; color: var(--purple); }
 .cv2-summary {
-  margin: 8px 0;
+  margin: 10px 0;
   background: #f4ecf1;
   border: 1px dashed var(--purple);
   border-radius: 8px;
-  padding: 8px 10px;
+  padding: 12px 14px;
   font-size: 0.72rem;
   display: flex;
   flex-direction: column;
-  gap: 3px;
+  gap: 8px;
 }
 .cv2-summary b { color: var(--purple); }
 .cv2-summary .cv2-total { color: var(--orange-dark); }
 .cv2-years {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 1px 14px;
+  gap: 6px 16px;
 }
 .cv2-year-cell {
   border-top: 1px dashed var(--border);
-  padding-top: 3px;
+  padding-top: 5px;
 }
 .cv2-year {
   display: flex;
@@ -303,14 +296,14 @@ body {
 .cv2-mois-payes {
   color: var(--muted);
   font-size: 0.68rem;
-  line-height: 1.2;
-  margin-top: 1px;
+  line-height: 1.3;
+  margin-top: 2px;
 }
 .cv2-year.ok b { color: #1b8a3a; }
 .cv2-year-montant { color: var(--muted); }
 .cv2-total-row {
   border-top: 1px dashed var(--border);
-  padding-top: 3px;
+  padding-top: 6px;
   display: flex;
   justify-content: space-between;
   flex-wrap: wrap;
