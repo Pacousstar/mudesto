@@ -155,7 +155,8 @@
         <li>Cliquez <strong>Generate token</strong> puis <strong>copiez le jeton</strong> (affiché une seule fois)</li>
         <li>Collez-le dans le champ ci-dessus puis cliquez <strong>Publier sur GitHub</strong></li>
       </ol>
-      <p style="margin-top:8px;">Le jeton est enregistré <strong>uniquement dans votre navigateur</strong> (aucun serveur) et limité au seul dépôt mudesto.</p>
+      <p style="margin-top:8px;">Le jeton est enregistré <strong>uniquement dans votre navigateur</strong> (aucun serveur) et limité au seul dépôt mudesto.<br>
+      <strong>Sécurité :</strong> avant de publier, le bouton vérifie automatiquement si des données plus récentes existent sur GitHub — si oui, il vous demande confirmation (ou synchronise la page si vous n'avez rien modifié).</p>
     </details>
 
     <div id="admin-content"></div>
@@ -189,7 +190,9 @@
       const ANNEES = DATA.annees;
 
       const saveStatus = $("#save-status");
+      let dirty = false;
       const markDirty = () => {
+        dirty = true;
         saveStatus.style.display = "block";
         saveStatus.textContent = "\u{1F4BE} Modifications non enregistrées \u2014 cliquez sur « Publier sur GitHub » pour les mettre en ligne (sinon elles seront perdues).";
         saveStatus.style.background = "#fdf3e4";
@@ -585,6 +588,34 @@
         status("Publication en cours...", undefined);
         $("#btn-publish").disabled = true;
         try {
+          /* Vérifier que personne n'a publié des données plus récentes sur GitHub */
+          let remoteData = null;
+          const getRes = await fetch("https://api.github.com/repos/" + REPO + "/contents/" + FILE_PATH, { headers: apiHeaders(token) });
+          if (getRes.ok) {
+            const j = await getRes.json();
+            const remoteTxt = decodeURIComponent(escape(atob(j.content)));
+            const eq = remoteTxt.indexOf("window.MUDESTO_DATA = ");
+            if (eq > -1) {
+              try {
+                remoteData = JSON.parse(remoteTxt.slice(eq + "window.MUDESTO_DATA = ".length).replace(/;\s*$/, ""));
+              } catch (e) { remoteData = null; }
+            }
+          }
+          const mine = JSON.stringify(DATA);
+          if (remoteData && JSON.stringify(remoteData) !== mine) {
+            if (!dirty) {
+              /* Rien n'a été modifié ici : on adopte la version en ligne (aucune perte) */
+              DATA = remoteData;
+              lists = { bureau: DATA.bureau, adherents: DATA.adherents, cotisants: DATA.cotisants };
+              renderTab();
+              status("Des données plus récentes ont été détectées sur GitHub \u2014 synchronisation effectuée, publication en cours...", undefined);
+            } else if (!confirm("\u26A0 Des données plus récentes ont été publiées sur GitHub depuis l'ouverture de cette page (photos, contacts, membres...). Publier maintenant les ÉCRASERA.\n\n• OK = publier quand même votre version\n• Annuler = rechargez la page (F5) pour récupérer les données à jour")) {
+              $("#btn-publish").disabled = false;
+              status("Publication annulée \u2014 rechargez la page (F5) pour récupérer les données à jour.", false);
+              return;
+            }
+          }
+
           const ts = Date.now().toString(36);
           await putRepoFile(token, FILE_PATH, buildDataJs(), "Mise à jour des membres (" + new Date().toLocaleString("fr-FR") + ")");
 
@@ -598,6 +629,9 @@
           }
 
           status("Publié ! Le site sera à jour dans ~1 min ✓", true);
+          dirty = false;
+          lists = { bureau: DATA.bureau, adherents: DATA.adherents, cotisants: DATA.cotisants };
+          renderTab();
           saveStatus.style.display = "block";
           saveStatus.textContent = "\u2713 Toutes les modifications sont publiées en ligne — le site sera à jour dans ~1 min (cache navigateur géré automatiquement).";
           saveStatus.style.background = "#e8f7ec";
