@@ -141,17 +141,40 @@
     const aJour = Object.values(cot).flatMap((y) => Object.values(y)).filter(Boolean).length;
     const montant = DATA.tarifs.cotisationMensuelle[m.categorie] || 0;
     const total = aJour * montant;
+    const totalPrevu = montant * ANNEES.length * 12;
+    const ABBR = ["Janv", "Févr", "Mars", "Avr", "Mai", "Juin", "Juil", "Août", "Sept", "Oct", "Nov", "Déc"];
+    const yearsRows = ANNEES.map((a) => {
+      const payes = cot[a] ? Object.values(cot[a]).filter(Boolean).length : 0;
+      const aJourAnnee = payes === 12;
+      const moisPayes = cot[a] ? MOIS.filter((mois) => cot[a][mois]) : [];
+      const moisTxt = moisPayes.length === 0 ? "—"
+        : moisPayes.length === 12 ? "Janv → Déc"
+        : moisPayes.map((mois) => ABBR[MOIS.indexOf(mois)] || mois).join(", ");
+      return `
+        <div class="cv2-year-cell${aJourAnnee ? " ok" : ""}">
+          <div class="cv2-year">
+            <span>${a}</span>
+            <b>${payes}/12 mois</b>
+            <span class="cv2-year-montant">${montant ? formatFCFA(payes * montant) : "—"}</span>
+          </div>
+          <div class="cv2-mois-payes">Mois payés : ${moisTxt}</div>
+        </div>`;
+    }).join("");
     return `
     <div class="digital-card card-cot-verso">
       <div class="cv2-head">COTISATION MENSUELLE &middot; ${m.nom} ${m.prenoms || ""} &middot; N° ${m.numCarte || "—"}</div>
+      <div class="cv2-summary">
+        <div>Catégorie : <b>${m.categorie || "—"}</b> &middot; Cotisation mensuelle : <b>${montant ? formatFCFA(montant) + "/mois" : "—"}</b></div>
+        <div class="cv2-years">${yearsRows}</div>
+        <div class="cv2-total-row">
+          Total cotisé : <b class="cv2-total">${montant ? formatFCFA(total) : "—"}</b>
+          ${montant ? `<span class="cv2-restant">Reste &agrave; cotiser : ${formatFCFA(Math.max(0, totalPrevu - total))}</span>` : ""}
+        </div>
+      </div>
       <table class="cv2-table">
         <tr><th>Mois</th>${cols}</tr>
         ${rows}
       </table>
-      <div class="cv2-summary">
-        <div>Catégorie : <b>${m.categorie || "—"}</b> &middot; Cotisation mensuelle : <b>${montant ? formatFCFA(montant) + "/mois" : "—"}</b></div>
-        <div>Total cotisé : <b>${aJour} mois</b> &times; ${montant ? formatFCFA(montant) : "—"} = <b class="cv2-total">${montant ? formatFCFA(total) : "—"}</b></div>
-      </div>
       <div style="text-align:center;margin-top:6px;">
         <span class="cv2-stamp">Vu par la trésorière &middot; ${aJour} mois payé${aJour > 1 ? "s" : ""}</span>
       </div>
