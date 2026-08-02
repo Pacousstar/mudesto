@@ -9,11 +9,11 @@ window.MUDESTO_DATA = {
     "periodeCarte": "2026 - 2031",
     "devise": "Ensemble, pour le développement et l'entraide de Toa-Zéo",
     "contact": {
-      "telephone": "",
-      "email": "",
+      "telephone": "+225 0151041647",
+      "email": "pacous2000@gmail.com",
       "adresse": "Toa-Zéo",
-      "facebook": "",
-      "whatsapp": ""
+      "facebook": "facebook.com",
+      "whatsapp": "°225 0707801817"
     }
   },
   "tarifs": {
