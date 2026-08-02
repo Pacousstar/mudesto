@@ -289,6 +289,24 @@ window.MUDESTO_DATA = {
           "Octobre": true
         }
       }
+    },
+    {
+      "id": "mmsb8x4bty5b3",
+      "nom": "XXXXXX",
+      "prenoms": "YYYYYYY",
+      "contact": "",
+      "categorie": "Village",
+      "numCarte": "",
+      "dateAdhesion": "",
+      "photo": null,
+      "cotisations": {
+        "2026": {
+          "Avril": true,
+          "Octobre": true,
+          "Novembre": true,
+          "Décembre": true
+        }
+      }
     }
   ]
 };
