@@ -141,7 +141,9 @@
     const aJour = Object.values(cot).flatMap((y) => Object.values(y)).filter(Boolean).length;
     const montant = DATA.tarifs.cotisationMensuelle[m.categorie] || 0;
     const total = aJour * montant;
-    const totalPrevu = montant * ANNEES.length * 12;
+    const anneeCourante = ANNEES.includes(String(new Date().getFullYear())) ? String(new Date().getFullYear()) : ANNEES[0];
+    const payesAnneeCourante = cot[anneeCourante] ? Object.values(cot[anneeCourante]).filter(Boolean).length : 0;
+    const resteAnneeCourante = Math.max(0, 12 * montant - payesAnneeCourante * montant);
     const ABBR = ["Janv", "Févr", "Mars", "Avr", "Mai", "Juin", "Juil", "Août", "Sept", "Oct", "Nov", "Déc"];
     const yearsRows = ANNEES.map((a) => {
       const payes = cot[a] ? Object.values(cot[a]).filter(Boolean).length : 0;
@@ -168,7 +170,7 @@
         <div class="cv2-years">${yearsRows}</div>
         <div class="cv2-total-row">
           Total cotisé : <b class="cv2-total">${montant ? formatFCFA(total) : "—"}</b>
-          ${montant ? `<span class="cv2-restant">Reste &agrave; cotiser : ${formatFCFA(Math.max(0, totalPrevu - total))}</span>` : ""}
+          ${montant ? `<span class="cv2-restant">Reste &agrave; cotiser ${anneeCourante} : ${formatFCFA(resteAnneeCourante)}</span>` : ""}
         </div>
       </div>
       <table class="cv2-table">
