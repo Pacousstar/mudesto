@@ -39,12 +39,19 @@
       cotisants: "Voir les cotisations"
     };
     const anneeCourante = ANNEES.includes(String(new Date().getFullYear())) ? String(new Date().getFullYear()) : ANNEES[0];
+    const dernierExigible = Math.min(6, new Date().getMonth() - 1);
     return list.map((m) => {
       let certif = "";
       if (kind === "cotisants") {
         const cot = m.cotisations || {};
-        const payes = cot[anneeCourante] ? Object.values(cot[anneeCourante]).filter(Boolean).length : 0;
-        if (payes === 12) certif = `<div class="member-cert">✓ Certifié à jour ${anneeCourante}</div>`;
+        let certifie = true;
+        for (let i = 0; i <= dernierExigible; i++) {
+          if (!(cot[anneeCourante] && cot[anneeCourante][MOIS[i]])) {
+            certifie = false;
+            break;
+          }
+        }
+        if (certifie) certif = `<div class="member-cert">✓ Certifié à jour ${anneeCourante}</div>`;
       }
       return `
       <div class="member-card" data-id="${m.id}" data-kind="${kind}">
