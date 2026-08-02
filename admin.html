@@ -156,18 +156,20 @@
         <li>Collez-le dans le champ ci-dessus puis cliquez <strong>Publier sur GitHub</strong></li>
       </ol>
       <p style="margin-top:8px;">Le jeton est enregistré <strong>uniquement dans votre navigateur</strong> (aucun serveur) et limité au seul dépôt mudesto.<br>
-      <strong>Sécurité :</strong> avant de publier, le bouton vérifie automatiquement si des données plus récentes existent sur GitHub — si oui, il vous demande confirmation (ou synchronise la page si vous n'avez rien modifié).</p>
+      <strong>Fusion automatique :</strong> au moment de publier, le bouton fusionne vos modifications avec celles faites ailleurs (champ par champ, membre par membre). Rien n'est jamais écrasé — ni vos MAJ, ni les MAJ extérieures.</p>
     </details>
 
     <div id="admin-content"></div>
   </div>
 
   <script src="data/data.js"></script>
+  <script src="assets/js/merge.js"></script>
   <script>
     (function () {
       "use strict";
 
       let DATA = window.MUDESTO_DATA;
+      let sessionBase = JSON.parse(JSON.stringify(DATA));
       let currentTab = "bureau";
 
       const $ = (s) => document.querySelector(s);
@@ -592,7 +594,9 @@
         status("Publication en cours...", undefined);
         $("#btn-publish").disabled = true;
         try {
-          /* Vérifier que personne n'a publié des données plus récentes sur GitHub */
+          /* Fusion automatique avec les données en ligne :
+             aucune MAJ faite ailleurs n'est perdue, aucune modification
+             faite ici n'est supprimée. */
           let remoteData = null;
           const getRes = await fetch("https://api.github.com/repos/" + REPO + "/contents/" + FILE_PATH, { headers: apiHeaders(token) });
           if (getRes.ok) {
@@ -605,18 +609,14 @@
               } catch (e) { remoteData = null; }
             }
           }
-          const mine = JSON.stringify(DATA);
-          if (remoteData && JSON.stringify(remoteData) !== mine) {
-            if (!dirty) {
-              /* Rien n'a été modifié ici : on adopte la version en ligne (aucune perte) */
-              DATA = remoteData;
+          if (remoteData && window.MUDESTO_MERGE) {
+            const merged = window.MUDESTO_MERGE.mergeData(sessionBase, DATA, remoteData);
+            if (JSON.stringify(merged) !== JSON.stringify(DATA)) {
+              DATA = merged;
+              sessionBase = JSON.parse(JSON.stringify(DATA));
               lists = { bureau: DATA.bureau, adherents: DATA.adherents, cotisants: DATA.cotisants };
               renderTab();
-              status("Des données plus récentes ont été détectées sur GitHub \u2014 synchronisation effectuée, publication en cours...", undefined);
-            } else if (!confirm("\u26A0 Des données plus récentes ont été publiées sur GitHub depuis l'ouverture de cette page (photos, contacts, membres...). Publier maintenant les ÉCRASERA.\n\n• OK = publier quand même votre version\n• Annuler = rechargez la page (F5) pour récupérer les données à jour")) {
-              $("#btn-publish").disabled = false;
-              status("Publication annulée \u2014 rechargez la page (F5) pour récupérer les données à jour.", false);
-              return;
+              status("Fusion automatique avec les MAJ faites ailleurs effectuée (aucune perte) — publication en cours...", undefined);
             }
           }
 
@@ -694,19 +694,20 @@
             el.textContent = txt;
             document.head.appendChild(el);
             DATA = window.MUDESTO_DATA;
+            sessionBase = JSON.parse(JSON.stringify(DATA));
             lists = { bureau: DATA.bureau, adherents: DATA.adherents, cotisants: DATA.cotisants };
             updateSectionTitle();
             renderTab();
             syncStatus.style.background = "#e8f7ec";
             syncStatus.style.borderColor = "#b7e3c3";
             syncStatus.style.color = "#1b8a3a";
-            syncStatus.textContent = "\u2713 Données chargées depuis GitHub (dernière version publiée). Vos modifications seront publiées par-dessus.";
+            syncStatus.textContent = "\u2713 Données chargées depuis GitHub (dernière version publiée). Vos modifications seront fusionnées au moment de publier.";
           })
           .catch(() => {
             syncStatus.style.background = "#fdf3e4";
             syncStatus.style.borderColor = "#f0d9a8";
             syncStatus.style.color = "#8a5a00";
-            syncStatus.textContent = "\u26A0 Hors ligne : édition des données locales. Publier remplacera la version en ligne.";
+            syncStatus.textContent = "\u26A0 Hors ligne : édition des données locales. À la publication, une fusion automatique avec la version en ligne aura lieu.";
           });
       }
     })();
