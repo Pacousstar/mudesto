@@ -72,6 +72,10 @@
     .year-block h5 { color: var(--purple); font-size: 0.8rem; margin-bottom: 4px; }
     .note { background: #fdf3e4; border: 1px solid #f0d9a8; border-radius: 8px; padding: 10px 14px; font-size: 0.85rem; margin-bottom: 18px; }
     .note code { background: #f5e9d6; padding: 1px 6px; border-radius: 4px; }
+    .copy-hint { grid-column: 1 / -1; background: #eef4fa; border: 1px dashed #9db8d6; border-radius: 8px; padding: 8px 12px; font-size: 0.78rem; color: #2b5a8c; }
+    .copy-notice { grid-column: 1 / -1; border-radius: 8px; padding: 8px 12px; font-size: 0.8rem; }
+    .copy-notice.ok { background: #e9f7ee; border: 1px solid #9bd4ab; color: #1b6b33; }
+    .copy-notice.ko { background: #fdf3e4; border: 1px solid #f0d9a8; color: #8a5a00; }
     .tab-title {
       background: var(--purple-soft);
       color: var(--white);
@@ -266,6 +270,9 @@
         const isCotisant = kind === "cotisants";
         return `
         <div class="member-row" data-id="${m.id}">
+          ${isCotisant ? `
+          <div class="copy-hint">Nom + Prénoms suffisent : les autres champs (catégorie, contact, n° de carte, photo, identité…) se copient automatiquement depuis « Droit d'adhésion payé » si le membre y existe déjà.</div>
+          <div class="copy-notice" style="display:none;"></div>` : ""}
           <div class="member-fields">
             <label>Nom<input class="f-nom" value="${(m.nom || "").replace(/"/g, "&quot;")}"></label>
             <label>Prénoms<input class="f-prenoms" value="${(m.prenoms || "").replace(/"/g, "&quot;")}"></label>
@@ -329,6 +336,41 @@
           const id = row.dataset.id;
           const m = list.find((x) => x.id === id);
           if (!m) return;
+
+          if (currentTab === "cotisants") {
+            const norm = (s) => (s || "").trim().toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+            const showCopyNotice = (ok, txt) => {
+              const notice = row.querySelector(".copy-notice");
+              if (notice) {
+                notice.style.display = "";
+                notice.className = "copy-notice " + ok;
+                notice.textContent = txt;
+              }
+            };
+            const autoFillFromAdherent = () => {
+              const nom = row.querySelector(".f-nom").value;
+              const prenoms = row.querySelector(".f-prenoms").value;
+              if (!nom && !prenoms) return;
+              const src = lists.adherents.find((a) => norm(a.nom) === norm(nom) && norm(a.prenoms) === norm(prenoms));
+              if (src) {
+                ["categorie", "contact", "numCarte", "dateAdhesion", "dateNaissance", "lieuNaissance", "profession", "pere", "mere", "quartier", "residence", "photo"].forEach((f) => { m[f] = src[f]; });
+                markDirty();
+                renderTab();
+                const row2 = document.querySelector('.member-row[data-id="' + m.id + '"]');
+                const n2 = row2 && row2.querySelector(".copy-notice");
+                if (n2) {
+                  n2.style.display = "";
+                  n2.className = "copy-notice ok";
+                  n2.textContent = "Données copiées depuis « Droit d'adhésion payé » : " + src.nom + " " + (src.prenoms || "") + " — catégorie, contact, n° de carte, photo, etc.";
+                }
+              } else {
+                showCopyNotice("ko", "Aucun membre « " + nom + " " + prenoms + " » trouvé dans « Droit d'adhésion payé » — remplissez les champs manuellement.");
+              }
+            };
+            row.querySelectorAll(".f-nom, .f-prenoms").forEach((el) => {
+              el.addEventListener("change", autoFillFromAdherent);
+            });
+          }
 
           row.querySelectorAll(".f-nom, .f-prenoms, .f-poste, .f-categorie, .f-contact, .f-num, .f-date, .f-ddn, .f-ldn, .f-prof, .f-pere, .f-mere, .f-quartier, .f-residence").forEach((el) => {
             el.addEventListener("change", () => {
