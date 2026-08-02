@@ -257,7 +257,13 @@ window.MUDESTO_DATA = {
       "cotisations": {
         "2026": {
           "Janvier": true,
-          "Février": true
+          "Février": true,
+          "Mars": true,
+          "Avril": true,
+          "Mai": true,
+          "Juin": true,
+          "Juillet": true,
+          "Août": false
         }
       }
     },
