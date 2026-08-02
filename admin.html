@@ -238,7 +238,11 @@
       /* ---------- Rendu ---------- */
 
       function cotEditor(m) {
+        const montant = DATA.tarifs.cotisationMensuelle[m.categorie] || 0;
         return `
+          <div style="font-size:0.82rem;color:var(--purple);margin-bottom:4px;">
+            <b>${m.categorie || "—"}</b> &middot; cotisation mensuelle : <b>${montant ? montant.toLocaleString("fr-FR") + " F" : "—"}</b>
+          </div>
           <div class="cot-grid">
             ${ANNEES.map((annee) => `
               <div class="year-block">

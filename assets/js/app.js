@@ -139,6 +139,8 @@
     }).join("");
     const cols = ANNEES.map((a) => `<th>${a}</th>`).join("");
     const aJour = Object.values(cot).flatMap((y) => Object.values(y)).filter(Boolean).length;
+    const montant = DATA.tarifs.cotisationMensuelle[m.categorie] || 0;
+    const total = aJour * montant;
     return `
     <div class="digital-card card-cot-verso">
       <div class="cv2-head">COTISATION MENSUELLE &middot; ${m.nom} ${m.prenoms || ""} &middot; N° ${m.numCarte || "—"}</div>
@@ -146,6 +148,10 @@
         <tr><th>Mois</th>${cols}</tr>
         ${rows}
       </table>
+      <div class="cv2-summary">
+        <div>Catégorie : <b>${m.categorie || "—"}</b> &middot; Cotisation mensuelle : <b>${montant ? formatFCFA(montant) + "/mois" : "—"}</b></div>
+        <div>Total cotisé : <b>${aJour} mois</b> &times; ${montant ? formatFCFA(montant) : "—"} = <b class="cv2-total">${montant ? formatFCFA(total) : "—"}</b></div>
+      </div>
       <div style="text-align:center;margin-top:6px;">
         <span class="cv2-stamp">Vu par la trésorière &middot; ${aJour} mois payé${aJour > 1 ? "s" : ""}</span>
       </div>
