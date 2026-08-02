@@ -205,12 +205,13 @@
 
   /* ---------- Modale ---------- */
 
-  function openModal(html, title) {
+  function openModal(html, title, wide) {
     $("#modal-content").innerHTML = `
       <h3 class="modal-title">${title}</h3>
       <div class="cards-stack">${html}</div>
       <p class="card-flip-hint">↑ Carte(s) officielle(s) du membre ↑</p>
     `;
+    document.querySelector(".modal-box").classList.toggle("modal-wide", !!wide);
     $("#modal").hidden = false;
     document.body.style.overflow = "hidden";
   }
@@ -231,7 +232,7 @@
       openModal(carteCotisationRecto(m) + identitePanel(m), `Carte de cotisation &mdash; ${m.nom} ${m.prenoms || ""}`);
     },
     cotisants: (m) => {
-      openModal(carteCotisationVerso(m) + identitePanel(m), `Cotisations &mdash; ${m.nom} ${m.prenoms || ""}`);
+      openModal(carteCotisationVerso(m) + identitePanel(m), `Cotisations &mdash; ${m.nom} ${m.prenoms || ""}`, true);
     }
   };
 

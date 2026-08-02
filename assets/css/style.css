@@ -139,6 +139,15 @@ body {
   position: relative;
   box-shadow: 0 20px 60px rgba(0, 0, 0, 0.35);
 }
+.modal-box.modal-wide {
+  max-width: 760px;
+}
+.modal-wide .digital-card { max-width: 700px; }
+.modal-wide .cv2-table { font-size: 0.74rem; }
+.modal-wide .cv2-table th,
+.modal-wide .cv2-table td { padding: 5px 7px; }
+.modal-wide .cv2-head { font-size: 0.9rem; }
+.modal-wide .cv2-summary { font-size: 0.78rem; }
 .modal-close {
   position: absolute;
   top: 10px;
