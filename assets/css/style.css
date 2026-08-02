@@ -320,7 +320,7 @@ body {
 .back-to-top {
   position: fixed;
   bottom: 24px;
-  left: 24px;
+  right: 24px;
   width: 52px;
   height: 52px;
   border: none;

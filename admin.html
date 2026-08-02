@@ -119,6 +119,9 @@
     <div id="save-status" style="display:none;background:#fdf3e4;border:1px solid #f0d9a8;border-radius:8px;padding:10px 14px;font-size:0.9rem;font-weight:700;margin-bottom:14px;color:#8a5a00;">
       &#128190; Modifications non enregistrées &mdash; cliquez sur « Publier sur GitHub » pour les mettre en ligne (sinon elles seront perdues).
     </div>
+    <div id="sync-status" style="display:none;background:#f3ecfa;border:1px solid #b99ed0;border-radius:8px;padding:10px 14px;font-size:0.9rem;font-weight:700;margin-bottom:14px;color:#6b3fa0;">
+      &nbsp;
+    </div>
 
     <div class="admin-actions">
       <button class="btn" id="btn-add">+ Ajouter un membre</button>
@@ -129,7 +132,8 @@
     <div class="note" style="border-color:#b99ed0;background:#f3ecfa;">
       <strong>Mise à jour automatique :</strong> après vos modifications, cliquez sur
       <strong>« Publier sur GitHub »</strong> ci-dessous. Le site
-      <code>pacousstar.github.io/mudesto</code> sera à jour en 1-2 minutes, sans rien télécharger.
+      <code>pacousstar.github.io/mudesto</code> sera à jour en ~1 minute — le cache du
+      navigateur est géré automatiquement à chaque publication.
     </div>
 
     <div class="admin-actions" style="align-items:center;">
@@ -160,7 +164,7 @@
     (function () {
       "use strict";
 
-      const DATA = window.MUDESTO_DATA;
+      let DATA = window.MUDESTO_DATA;
       let currentTab = "bureau";
 
       const $ = (s) => document.querySelector(s);
@@ -177,7 +181,7 @@
         saveStatus.style.color = "#8a5a00";
       };
 
-      const lists = { bureau: DATA.bureau, adherents: DATA.adherents, cotisants: DATA.cotisants };
+      let lists = { bureau: DATA.bureau, adherents: DATA.adherents, cotisants: DATA.cotisants };
       const uid = () => "m" + Date.now().toString(36) + Math.random().toString(36).slice(2, 6);
 
       /* ---------- Titre de la section active ---------- */
@@ -467,11 +471,55 @@
         pubStatus.style.color = ok === undefined ? "var(--muted)" : ok ? "#1b8a3a" : "#c0392b";
       };
 
-      const buildDataJs = () =>
-        "/* ============================================================\n" +
-        "   MUDESTO - Base de données des membres (générée par admin.html)\n" +
-        "   ============================================================ */\n\n" +
-        "window.MUDESTO_DATA = " + JSON.stringify(DATA, null, 2) + ";\n";
+      const buildDataJs = () => {
+        const clone = JSON.parse(JSON.stringify(DATA));
+        for (const f of ["telephone", "whatsapp"]) {
+          if (clone.mutuelle.contact && clone.mutuelle.contact[f]) {
+            clone.mutuelle.contact[f] = String(clone.mutuelle.contact[f]).replace(/^\u00B0/, "+");
+          }
+        }
+        return "/* ============================================================\n" +
+          "   MUDESTO - Base de données des membres (générée par admin.html)\n" +
+          "   ============================================================ */\n\n" +
+          "window.MUDESTO_DATA = " + JSON.stringify(clone, null, 2) + ";\n";
+      };
+
+      const apiHeaders = (token) => ({
+        "Authorization": "Bearer " + token,
+        "Accept": "application/vnd.github+json",
+        "User-Agent": "MUDESTO-admin"
+      });
+
+      const getRepoFile = async (token, path) => {
+        const res = await fetch("https://api.github.com/repos/" + REPO + "/contents/" + path, { headers: apiHeaders(token) });
+        if (!res.ok) throw new Error(path + " introuvable (" + res.status + ")");
+        const j = await res.json();
+        return { text: decodeURIComponent(escape(atob(j.content))), sha: j.sha };
+      };
+
+      const putRepoFile = async (token, path, content, message) => {
+        let sha = null;
+        const getRes = await fetch("https://api.github.com/repos/" + REPO + "/contents/" + path, { headers: apiHeaders(token) });
+        if (getRes.ok) sha = (await getRes.json()).sha;
+        else if (getRes.status !== 404) throw new Error("API GitHub : " + getRes.status);
+
+        const putRes = await fetch("https://api.github.com/repos/" + REPO + "/contents/" + path, {
+          method: "PUT",
+          headers: { ...apiHeaders(token), "Content-Type": "application/json" },
+          body: JSON.stringify({
+            message: message,
+            content: btoa(unescape(encodeURIComponent(content))),
+            sha: sha || undefined
+          })
+        });
+        if (!putRes.ok) {
+          const err = await putRes.json().catch(() => ({}));
+          if ((err.message || "").toLowerCase().includes("authentication")) {
+            throw new Error("token");
+          }
+          throw new Error(err.message || putRes.status);
+        }
+      };
 
       $("#btn-publish").addEventListener("click", async () => {
         const token = tokenInput.value.trim();
@@ -483,43 +531,28 @@
         status("Publication en cours...", undefined);
         $("#btn-publish").disabled = true;
         try {
-          const headers = {
-            "Authorization": "Bearer " + token,
-            "Accept": "application/vnd.github+json",
-            "User-Agent": "MUDESTO-admin"
-          };
-          let sha = null;
-          const getRes = await fetch("https://api.github.com/repos/" + REPO + "/contents/" + FILE_PATH, { headers });
-          if (getRes.ok) sha = (await getRes.json()).sha;
-          else if (getRes.status !== 404) throw new Error("API GitHub : " + getRes.status);
+          const ts = Date.now().toString(36);
+          await putRepoFile(token, FILE_PATH, buildDataJs(), "Mise à jour des membres (" + new Date().toLocaleString("fr-FR") + ")");
 
-          const putRes = await fetch("https://api.github.com/repos/" + REPO + "/contents/" + FILE_PATH, {
-            method: "PUT",
-            headers: { ...headers, "Content-Type": "application/json" },
-            body: JSON.stringify({
-              message: "Mise à jour des membres (" + new Date().toLocaleString("fr-FR") + ")",
-              content: btoa(unescape(encodeURIComponent(buildDataJs()))),
-              sha: sha || undefined
-            })
-          });
-          if (!putRes.ok) {
-            const err = await putRes.json().catch(() => ({}));
-            const msg = (err.message || "").toLowerCase();
-            if (msg.includes("authentication") || msg.includes("token")) {
-              status("Jeton invalide ou sans permission. Recréez-le (aide ci-dessus).", false);
-            } else {
-              status("Erreur GitHub : " + (err.message || putRes.status), false);
-            }
-            return;
+          /* Anti-cache : force le navigateur à recharger data/data.js */
+          const idx = await getRepoFile(token, "index.html");
+          const newIdx = idx.text.replace(/src="data\/data\.js(?:\?v=[^"]*)?"/g, `src="data/data.js?v=${ts}"`);
+          if (newIdx !== idx.text) {
+            await putRepoFile(token, "index.html", newIdx, "Anti-cache navigateur : version des données (v" + ts + ")");
           }
-          status("Publié ! Le site sera à jour dans 1-2 min ✓", true);
+
+          status("Publié ! Le site sera à jour dans ~1 min ✓", true);
           saveStatus.style.display = "block";
-          saveStatus.textContent = "\u2713 Toutes les modifications sont publiées en ligne — le site sera à jour dans 1-2 min.";
+          saveStatus.textContent = "\u2713 Toutes les modifications sont publiées en ligne — le site sera à jour dans ~1 min (cache navigateur géré automatiquement).";
           saveStatus.style.background = "#e8f7ec";
           saveStatus.style.borderColor = "#b7e3c3";
           saveStatus.style.color = "#1b8a3a";
         } catch (e) {
-          status("Erreur : " + e.message, false);
+          if (e.message === "token") {
+            status("Jeton invalide ou sans permission. Recréez-le (aide ci-dessus).", false);
+          } else {
+            status("Erreur : " + e.message, false);
+          }
         } finally {
           $("#btn-publish").disabled = false;
         }
@@ -543,6 +576,45 @@
 
       updateSectionTitle();
       renderTab();
+
+      /* ---------- Charger les dernières données publiées depuis GitHub ----------
+         Le fichier data/data.js local peut être plus ancien que la version en ligne
+         (publiée depuis cet écran). En mode local, on charge la version GitHub
+         pour ne jamais écraser des données plus récentes. */
+      const syncStatus = $("#sync-status");
+      if (window.location.protocol === "file:" && window.fetch) {
+        syncStatus.style.display = "block";
+        syncStatus.style.background = "#f3ecfa";
+        syncStatus.style.borderColor = "#b99ed0";
+        syncStatus.style.color = "#6b3fa0";
+        syncStatus.textContent = "\u23F3 Recherche des dernières données publiées sur GitHub...";
+        fetch("https://raw.githubusercontent.com/Pacousstar/mudesto/main/data/data.js")
+          .then((r) => { if (!r.ok) throw new Error("HTTP " + r.status); return r.text(); })
+          .then((txt) => {
+            if (!/window\.MUDESTO_DATA\s*=/.test(txt)) throw new Error("contenu invalide");
+            if (saveStatus.style.display === "block") {
+              syncStatus.textContent = "\u26A0 Des données plus récentes existent sur GitHub, mais vos modifications locales ne sont pas publiées. Publiez ou annulez.";
+              return;
+            }
+            const el = document.createElement("script");
+            el.textContent = txt;
+            document.head.appendChild(el);
+            DATA = window.MUDESTO_DATA;
+            lists = { bureau: DATA.bureau, adherents: DATA.adherents, cotisants: DATA.cotisants };
+            updateSectionTitle();
+            renderTab();
+            syncStatus.style.background = "#e8f7ec";
+            syncStatus.style.borderColor = "#b7e3c3";
+            syncStatus.style.color = "#1b8a3a";
+            syncStatus.textContent = "\u2713 Données chargées depuis GitHub (dernière version publiée). Vos modifications seront publiées par-dessus.";
+          })
+          .catch(() => {
+            syncStatus.style.background = "#fdf3e4";
+            syncStatus.style.borderColor = "#f0d9a8";
+            syncStatus.style.color = "#8a5a00";
+            syncStatus.textContent = "\u26A0 Hors ligne : édition des données locales. Publier remplacera la version en ligne.";
+          });
+      }
     })();
   </script>
 </body>
