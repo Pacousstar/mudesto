@@ -277,6 +277,24 @@ body {
 }
 .cv2-summary b { color: var(--purple); }
 .cv2-summary .cv2-total { color: var(--orange-dark); }
+.cv2-year {
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+  border-top: 1px dashed var(--border);
+  padding-top: 3px;
+}
+.cv2-year.ok b { color: #1b8a3a; }
+.cv2-year-montant { color: var(--muted); }
+.cv2-total-row {
+  border-top: 1px dashed var(--border);
+  padding-top: 3px;
+  display: flex;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 4px 8px;
+}
+.cv2-restant { color: var(--muted); }
 .cv2-stamp {
   margin-top: 8px;
   text-align: center;
