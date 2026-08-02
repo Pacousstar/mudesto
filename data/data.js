@@ -266,8 +266,8 @@ window.MUDESTO_DATA = {
           "Août": true,
           "Septembre": true,
           "Octobre": true,
-          "Novembre": true,
-          "Décembre": true
+          "Novembre": false,
+          "Décembre": false
         }
       }
     },
