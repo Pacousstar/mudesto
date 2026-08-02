@@ -13,7 +13,7 @@ window.MUDESTO_DATA = {
       "email": "pacous2000@gmail.com",
       "adresse": "Toa-Zéo",
       "facebook": "facebook.com",
-      "whatsapp": "°225 0707801817"
+      "whatsapp": "+225 0707801817"
     }
   },
   "tarifs": {
