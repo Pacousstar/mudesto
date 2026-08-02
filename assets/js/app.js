@@ -155,18 +155,18 @@
     return `
     <div class="digital-card card-cot-verso">
       <div class="cv2-head">COTISATION MENSUELLE &middot; ${m.nom} ${m.prenoms || ""} &middot; N° ${m.numCarte || "—"}</div>
-      <table class="cv2-table">
-        <tr><th>Mois</th>${cols}</tr>
-        ${rows}
-      </table>
       <div class="cv2-summary">
         <div>Catégorie : <b>${m.categorie || "—"}</b> &middot; Cotisation mensuelle : <b>${montant ? formatFCFA(montant) + "/mois" : "—"}</b></div>
-        ${yearsRows}
+        <div class="cv2-years">${yearsRows}</div>
         <div class="cv2-total-row">
           Total cotisé : <b class="cv2-total">${montant ? formatFCFA(total) : "—"}</b>
           ${montant ? `<span class="cv2-restant">Reste &agrave; cotiser : ${formatFCFA(Math.max(0, totalPrevu - total))}</span>` : ""}
         </div>
       </div>
+      <table class="cv2-table">
+        <tr><th>Mois</th>${cols}</tr>
+        ${rows}
+      </table>
       <div style="text-align:center;margin-top:6px;">
         <span class="cv2-stamp">Vu par la trésorière &middot; ${aJour} mois payé${aJour > 1 ? "s" : ""}</span>
       </div>
