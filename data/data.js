@@ -263,7 +263,11 @@ window.MUDESTO_DATA = {
           "Mai": true,
           "Juin": true,
           "Juillet": true,
-          "Août": false
+          "Août": true,
+          "Septembre": true,
+          "Octobre": true,
+          "Novembre": true,
+          "Décembre": true
         }
       }
     },
@@ -277,8 +281,12 @@ window.MUDESTO_DATA = {
       "photo": null,
       "cotisations": {
         "2026": {
-          "Janvier": true,
-          "Février": false
+          "Janvier": false,
+          "Février": false,
+          "Août": true,
+          "Juillet": true,
+          "Septembre": true,
+          "Octobre": true
         }
       }
     }
